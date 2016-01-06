@@ -9,9 +9,7 @@
 using System;
 using System.IO;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 
 namespace SizingServers.IPC {
@@ -58,7 +56,7 @@ namespace SizingServers.IPC {
                     _receiver.Start(1);
                     break;
                 } catch {
-                    //Not important. If it doesn't work the other sender does not exist anymore or the sender will handle it.
+                    if (i == 2) throw;
                 }
 
             _bf = new BinaryFormatter();
@@ -80,30 +78,39 @@ namespace SizingServers.IPC {
                     }
             }, null);
         }
-
-        /// <summary>
-        /// Reads handle size, handle, message size and message from the stream. If the handle in the message is invalid the connection will be closed.
-        /// </summary>
-        /// <param name="client"></param>
         private void HandleReceive(TcpClient client) {
             ThreadPool.QueueUserWorkItem((state) => {
                 try {
                     while (!IsDisposed) {
-                        Stream str = client.GetStream();
-                        int longSize = Marshal.SizeOf<long>();
+                        var chunk = new byte[client.ReceiveBufferSize];
 
-                        long handleSize = GetLong(ReadBytes(str, client.ReceiveBufferSize, longSize));
-                        string handle = GetString(ReadBytes(str, client.ReceiveBufferSize, handleSize));
+                        //Get the length of the message that follows.
+                        client.GetStream().Read(chunk, 0, chunk.Length);
 
-                        if (handle == Handle) {
-                            long messageSize = GetLong(ReadBytes(str, client.ReceiveBufferSize, longSize));
-                            object message = GetObject(ReadBytes(str, client.ReceiveBufferSize, messageSize));
+                        int messageLength = BitConverter.ToInt32(chunk, 0);
+                        var message = new byte[messageLength];
+                        int totalRead = 0;
 
-                            if (MessageReceived != null)
-                                MessageReceived(this, new MessageEventArgs() { Message = message });
-                        } else {
-                            //Invalid sender. Close the connection.
-                            client.Dispose();
+                        //Send Ack
+                        client.GetStream().Write(Keys.ACK_bytes, 0, Keys.ACK_bytes.Length);
+                        client.GetStream().Flush();
+
+                        //Read all bytes of the message.
+                        while (totalRead != messageLength) {
+                            int chunkLength = client.ReceiveBufferSize;
+                            if (chunkLength > messageLength - totalRead) chunkLength = messageLength - totalRead;
+
+                            chunk = new byte[chunkLength];
+                            int chunkRead = client.GetStream().Read(chunk, 0, chunkLength);
+                            if (chunkRead <= 0) break;
+                            chunk.CopyTo(message, totalRead);
+                            totalRead += chunkRead;
+                        }
+
+                        using (var ms = new MemoryStream(message)) {
+                            var e = (MessageWrapper)_bf.Deserialize(ms);
+                            if (Handle == null || e.Handle == Handle)
+                                MessageReceived(this, new MessageEventArgs() { Message = e.Message });
                         }
                     }
                 } catch {
@@ -111,42 +118,6 @@ namespace SizingServers.IPC {
                 }
             }, null);
         }
-
-        private byte[] ReadBytes(Stream str, int bufferSize, long length) {
-            var bytes = new byte[length];
-
-            long totalRead = 0;
-            while (totalRead != length) {
-                int chunkLength = bufferSize;
-                if (chunkLength > length - totalRead) chunkLength = (int)(length - totalRead);
-
-                var chunk = new byte[chunkLength];
-                int chunkRead = str.Read(chunk, 0, chunkLength);
-                if (chunkRead <= 0) break;
-                chunk.CopyTo(bytes, totalRead);
-                totalRead += chunkRead;
-            }
-
-            return bytes;
-        }
-
-        private long GetLong(byte[] bytes) {
-            long l = Activator.CreateInstance<long>();
-            int size = Marshal.SizeOf(l);
-            IntPtr ptr = Marshal.AllocHGlobal(size);
-            Marshal.Copy(bytes, 0, ptr, size);
-            l = (long)Marshal.PtrToStructure(ptr, l.GetType());
-            Marshal.FreeHGlobal(ptr);
-            return l;
-        }
-        private string GetString(byte[] bytes) { return Encoding.UTF8.GetString(bytes); }
-        private object GetObject(byte[] bytes) {
-            object o;
-            using (var ms = new MemoryStream(bytes))
-                o = _bf.Deserialize(ms);
-            return o;
-        }
-
         /// <summary>
         /// 
         /// </summary>

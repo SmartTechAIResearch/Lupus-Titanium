@@ -44,9 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MessageEventArgs.cs" />
+    <Compile Include="Keys.cs" />
     <Compile Include="Receiver.cs" />
     <Compile Include="Sender.cs" />
     <Compile Include="EndPointManager.cs" />
+    <Compile Include="MessageWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

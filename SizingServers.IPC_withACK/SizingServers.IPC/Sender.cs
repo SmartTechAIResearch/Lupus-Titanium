@@ -11,9 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SizingServers.IPC {
@@ -68,67 +66,24 @@ namespace SizingServers.IPC {
             try {
                 if (!IsDisposed) {
                     if (BeforeMessageSent != null) BeforeMessageSent(this, new MessageEventArgs() { Message = message });
-                    
-                    SetSenders();
-                    if (_senders.Count != 0) {
-                        byte[] bytes = SerializeMessage(message);
-                        Parallel.ForEach(_senders, (kvp) => Send(kvp.Key, kvp.Value, bytes));
 
+                    byte[] messageBytes = null;
+                    using (var ms = new MemoryStream()) {
+                        _bf.Serialize(ms, new MessageWrapper() { Handle = Handle, Message = message });
+                        messageBytes = ms.GetBuffer();
                     }
+
+                    SetSenders();
+                    Parallel.ForEach(_senders, (kvp) => {
+                        Send(kvp.Key, kvp.Value, messageBytes);
+                    });
+
+
                     if (AfterMessageSent != null) AfterMessageSent(this, new MessageEventArgs() { Message = message });
                 }
             } catch (Exception ex) {
                 if (!IsDisposed && OnSendFailed != null) OnSendFailed(this, new ErrorEventArgs(ex));
             }
-        }
-
-        /// <summary>
-        /// Writes the handle size, the handle, the message size and the message to array.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private byte[] SerializeMessage(object message) {
-            byte[] handleBytes = GetBytes(Handle);
-            byte[] handleSizeBytes = GetBytes(handleBytes.LongLength);
-
-            byte[] messageBytes = GetBytes(message);
-            byte[] messageSizeBytes = GetBytes(messageBytes.LongLength);
-
-            var bytes = new byte[handleSizeBytes.LongLength + handleBytes.LongLength + messageSizeBytes.LongLength + messageBytes.LongLength];
-
-            long pos = 0L;
-            handleSizeBytes.CopyTo(bytes, pos);
-            pos += handleSizeBytes.LongLength;
-
-            handleBytes.CopyTo(bytes, pos);
-            pos += handleBytes.LongLength;
-
-            messageSizeBytes.CopyTo(bytes, pos);
-            pos += messageSizeBytes.LongLength;
-
-            messageBytes.CopyTo(bytes, pos);
-
-            return bytes;
-        }
-        private byte[] GetBytes(string s) {
-            return Encoding.UTF8.GetBytes(s);
-        }
-        private byte[] GetBytes(object o) {
-            byte[] bytes = null;
-            using (var ms = new MemoryStream()) {
-                _bf.Serialize(ms, o);
-                bytes = ms.GetBuffer();
-            }
-            return bytes;
-        }
-        private byte[] GetBytes(long l) {
-            int size = Marshal.SizeOf(l);
-            byte[] arr = new byte[size];
-            IntPtr ptr = Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(l, ptr, true);
-            Marshal.Copy(ptr, arr, 0, size);
-            Marshal.FreeHGlobal(ptr);
-            return arr;
         }
 
         /// <summary>
@@ -162,7 +117,7 @@ namespace SizingServers.IPC {
             _senders = newSenders;
         }
 
-        private void Send(TcpClient _sender, IPEndPoint endPoint, byte[] bytes) {
+        private void Send(TcpClient _sender, IPEndPoint endPoint, byte[] messageBytes) {
             try {
                 if (!_sender.Connected)
                     try {
@@ -171,13 +126,26 @@ namespace SizingServers.IPC {
                         return;
                     }
 
-                int offset = 0;
-                while (offset != bytes.Length) {
-                    int length = _sender.SendBufferSize;
-                    if (offset + length > bytes.Length)
-                        length = bytes.Length - offset;
+                //Write the message length
+                byte[] messageLength = BitConverter.GetBytes(messageBytes.Length);
+                _sender.GetStream().Write(messageLength, 0, messageLength.Length);
+                _sender.GetStream().Flush();
 
-                    _sender.GetStream().Write(bytes, offset, length);
+                //Ack
+                byte[] ack = new byte[_sender.ReceiveBufferSize];
+                _sender.GetStream().Read(ack, 0, _sender.ReceiveBufferSize);
+
+                if (!Keys.Equals(ack, Keys.ACK)) throw new Exception("Ack expected but not received!");
+
+
+                //Write the message.
+                int offset = 0;
+                while (offset != messageBytes.Length) {
+                    int length = _sender.SendBufferSize;
+                    if (offset + length > messageBytes.Length)
+                        length = messageBytes.Length - offset;
+
+                    _sender.GetStream().Write(messageBytes, offset, length);
 
                     offset += length;
                 }
