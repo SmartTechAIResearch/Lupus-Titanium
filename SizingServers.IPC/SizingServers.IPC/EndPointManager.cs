@@ -16,12 +16,12 @@ using System.Threading;
 
 namespace SizingServers.IPC {
     internal static class EndPointManager {
-        private static Mutex _namedMutex = new Mutex(false, BASE_ID);
+        private static Mutex _namedMutex = new Mutex(false, KEY);
 
         /// <summary>
         /// Used for a key in the registry to store the end points.
         /// </summary>
-        public const string BASE_ID = "RandomUtils.Message{8B20C7BD-634B-408D-B337-732644177389}";
+        public const string KEY = "RandomUtils.Message{8B20C7BD-634B-408D-B337-732644177389}";
 
         /// <summary>
         /// Add a new port tot the endpoint for the receiver.
@@ -40,7 +40,6 @@ namespace SizingServers.IPC {
 
             if (_namedMutex.WaitOne()) {
                 var endPoints = GetRegisteredEndPoints();
-                CleanupEndpoints(endPoints);
                 if (!endPoints.ContainsKey(handle)) endPoints.Add(handle, new HashSet<int>());
 
                 endPoint = new IPEndPoint(IPAddress.Loopback, GetAvailableTcpPort());
@@ -67,12 +66,10 @@ namespace SizingServers.IPC {
             var endPoints = new List<IPEndPoint>();
 
             if (_namedMutex.WaitOne()) {
-                var registeredEndPoints = GetRegisteredEndPoints();
+                var allEndPoints = GetRegisteredEndPoints();
 
-                CleanupEndpoints(registeredEndPoints);
-
-                if (registeredEndPoints.ContainsKey(handle))
-                    foreach (int port in registeredEndPoints[handle])
+                if (allEndPoints.ContainsKey(handle))
+                    foreach (int port in allEndPoints[handle])
                         endPoints.Add(new IPEndPoint(IPAddress.Loopback, port));
 
                 _namedMutex.ReleaseMutex();
@@ -81,33 +78,11 @@ namespace SizingServers.IPC {
             return endPoints;
         }
 
-        /// <summary>
-        /// All unused end points (read: unused tcp ports) are removed from the given dictionary.
-        /// </summary>
-        private static void CleanupEndpoints(Dictionary<string, HashSet<int>> endPoints) {
-            HashSet<int> usedPorts = GetUsedTcpPorts();
-
-            bool equals = true;
-            var newEndPoints = new Dictionary<string, HashSet<int>>();
-            foreach (string handle in endPoints.Keys)
-                foreach (int port in endPoints[handle]) {
-                    if (usedPorts.Contains(port)) {
-                        if (!newEndPoints.ContainsKey(handle)) newEndPoints.Add(handle, new HashSet<int>());
-                        newEndPoints[handle].Add(port);
-                    } else {
-                        equals = false;
-                    }
-                }
-            if (!equals) {
-                endPoints = newEndPoints;
-                SetRegisteredEndPoints(endPoints);
-            }
-        }
-
         private static Dictionary<string, HashSet<int>> GetRegisteredEndPoints() {
+            //Get the end points from the registry.
             var endPoints = new Dictionary<string, HashSet<int>>();
 
-            RegistryKey subKey = Registry.CurrentUser.OpenSubKey("Software\\" + BASE_ID);
+            RegistryKey subKey = Registry.CurrentUser.OpenSubKey("Software\\" + KEY);
             if (subKey != null) {
                 string value = subKey.GetValue("EndPoints") as string;
                 if (value != null) {
@@ -127,6 +102,25 @@ namespace SizingServers.IPC {
                 }
             }
 
+            //Cleanup end points if needed.
+            HashSet<int> usedPorts = GetUsedTcpPorts();
+
+            bool equals = true;
+            var newEndPoints = new Dictionary<string, HashSet<int>>();
+            foreach (string handle in endPoints.Keys)
+                foreach (int port in endPoints[handle]) {
+                    if (usedPorts.Contains(port)) {
+                        if (!newEndPoints.ContainsKey(handle)) newEndPoints.Add(handle, new HashSet<int>());
+                        newEndPoints[handle].Add(port);
+                    } else {
+                        equals = false;
+                    }
+                }
+            if (!equals) {
+                endPoints = newEndPoints;
+                SetRegisteredEndPoints(endPoints);
+            }
+
             return endPoints;
         }
 
@@ -144,7 +138,7 @@ namespace SizingServers.IPC {
                 sb.Append(',');
             }
 
-            RegistryKey subKey = Registry.CurrentUser.CreateSubKey("Software\\" + BASE_ID, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryOptions.Volatile);
+            RegistryKey subKey = Registry.CurrentUser.CreateSubKey("Software\\" + KEY, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryOptions.Volatile);
             subKey.SetValue("Endpoints", sb.ToString(), RegistryValueKind.String);
         }
 

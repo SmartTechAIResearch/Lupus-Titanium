@@ -15,7 +15,9 @@ namespace SizingServers.IPC.TestReceiver {
         }
 
         private static void _receiver_MessageReceived(object sender, MessageEventArgs e) {
-            Console.WriteLine("'" + e.Message + "' received");
+            object message = e.Message;
+            if (message is byte[]) message =System.Text.Encoding.UTF8.GetString(message as byte[]);
+            Console.WriteLine("'" + message + "' received");
         }
     }
 }

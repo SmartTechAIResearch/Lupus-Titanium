@@ -21,11 +21,14 @@ namespace SizingServers.IPC.TestSender {
         }
 
         private static void _sender_AfterMessageSent(object sender, MessageEventArgs e) {
-            Console.WriteLine("'" + e.Message + "'sent");
+            object message = e.Message;
+            if (message is byte[]) message = System.Text.Encoding.UTF8.GetString(message as byte[]);
+            Console.WriteLine("'" + message + "'sent");
         }
 
         private static void Tmr_Elapsed(object sender, ElapsedEventArgs e) {
             _sender.Send("Foo");
+            //_sender.Send(System.Text.Encoding.UTF8.GetBytes("FooBytes"));
         }
     }
 }

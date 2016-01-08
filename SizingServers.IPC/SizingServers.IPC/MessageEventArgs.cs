@@ -13,7 +13,6 @@ namespace SizingServers.IPC {
     /// </summary>
     public class MessageEventArgs : EventArgs {
         /// <summary>
-        /// Can be anything, must be Serializable.
         /// </summary>
         public object Message { get; internal set; }
     }

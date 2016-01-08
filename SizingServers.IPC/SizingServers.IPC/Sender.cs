@@ -39,62 +39,93 @@ namespace SizingServers.IPC {
         private BinaryFormatter _bf;
         private Dictionary<TcpClient, IPEndPoint> _senders;
 
+        private readonly object _lock = new object();
+
         /// <summary>
-        /// 
+        /// Hashcode of the message. When resending the same data it is not serialized again.
         /// </summary>
-        public bool IsDisposed { get; private set; }
+        private int _hashcode;
+        private byte[] _bytes;
+
+        /// <summary>
+        /// <para>When true, a message (+ encapsulation) you send is kept in memory. When you resend the same message it will not be serialized again.</para>
+        /// </summary>
+        public bool Buffered { get; private set; }
+
         /// <summary>
         /// 
         /// </summary>
         public string Handle { get; private set; }
 
         /// <summary>
-        /// 
+        /// </summary>
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// <para>Add a new Sender in the code of the process you want to send messages. Make sure the handles matches the one of the Receivers.</para>
+        /// <para>This inter process communication only works on the same machine and in the same Windows session.</para>
+        /// <para>Suscribe to OnSendFailed for error handeling. Please not Sending will always fail when a Receiver disappears.</para>
         /// </summary>
         /// <param name="handle">A unique identifier to match the right sender with the right receivers.</param>
-        public Sender(string handle) {
+        /// <param name="buffered">
+        /// <para>When true, a message (+ encapsulation) you send is kept in memory. When you resend the same message it will not be serialized again.</para>
+        /// </param>
+        public Sender(string handle, bool buffered = false) {
             if (string.IsNullOrWhiteSpace(handle)) throw new ArgumentNullException(handle);
 
             Handle = handle;
+            Buffered = buffered;
 
             _senders = new Dictionary<TcpClient, IPEndPoint>();
             _bf = new BinaryFormatter();
         }
         /// <summary>
-        /// Send a message to the Receivers. It must be serializable.
+        /// Send a message to the Receivers. This is a blocking function.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">
+        /// If the given object is a byte array, it will not be serialized. Otherwise, the object will be serialized using a binary formatter.
+        /// </param>
         public void Send(object message) {
-            try {
-                if (!IsDisposed) {
-                    if (BeforeMessageSent != null) BeforeMessageSent(this, new MessageEventArgs() { Message = message });
-                    
-                    SetSenders();
-                    if (_senders.Count != 0) {
-                        byte[] bytes = SerializeMessage(message);
-                        Parallel.ForEach(_senders, (kvp) => Send(kvp.Key, kvp.Value, bytes));
+            lock (_lock)
+               try {
+                    if (!IsDisposed) {
+                        if (BeforeMessageSent != null) BeforeMessageSent(this, new MessageEventArgs() { Message = message });
 
+                        SetSenders();
+                        if (_senders.Count != 0)
+                            if (Buffered) {
+                                if (message.GetHashCode() != _hashcode) {
+                                    _bytes = SerializeMessage(message);
+                                    _hashcode = message.GetHashCode();
+                                }
+                                Parallel.ForEach(_senders, (kvp) => Send(kvp.Key, kvp.Value, _bytes));
+
+                            } else {
+                                Parallel.ForEach(_senders, (kvp) => Send(kvp.Key, kvp.Value, SerializeMessage(message)));
+                            }
+
+                        if (AfterMessageSent != null) AfterMessageSent(this, new MessageEventArgs() { Message = message });
                     }
-                    if (AfterMessageSent != null) AfterMessageSent(this, new MessageEventArgs() { Message = message });
+                } catch (Exception ex) {
+                    if (!IsDisposed && OnSendFailed != null) OnSendFailed(this, new ErrorEventArgs(ex));
                 }
-            } catch (Exception ex) {
-                if (!IsDisposed && OnSendFailed != null) OnSendFailed(this, new ErrorEventArgs(ex));
-            }
         }
 
         /// <summary>
-        /// Writes the handle size, the handle, the message size and the message to array.
+        /// Writes the handle size, the handle (UTF8 encoding), 1 if message is byte array or 0, the message size and the message to an array.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
         private byte[] SerializeMessage(object message) {
+            bool messageIsByteArray = message is byte[];
+
             byte[] handleBytes = GetBytes(Handle);
             byte[] handleSizeBytes = GetBytes(handleBytes.LongLength);
 
-            byte[] messageBytes = GetBytes(message);
+            byte[] messageBytes = messageIsByteArray ? message as byte[] : GetBytes(message);
             byte[] messageSizeBytes = GetBytes(messageBytes.LongLength);
 
-            var bytes = new byte[handleSizeBytes.LongLength + handleBytes.LongLength + messageSizeBytes.LongLength + messageBytes.LongLength];
+            var bytes = new byte[handleSizeBytes.LongLength + handleBytes.LongLength + 1 + messageSizeBytes.LongLength + messageBytes.LongLength];
 
             long pos = 0L;
             handleSizeBytes.CopyTo(bytes, pos);
@@ -103,6 +134,8 @@ namespace SizingServers.IPC {
             handleBytes.CopyTo(bytes, pos);
             pos += handleBytes.LongLength;
 
+            bytes[pos++] = GetBytes(messageIsByteArray);
+
             messageSizeBytes.CopyTo(bytes, pos);
             pos += messageSizeBytes.LongLength;
 
@@ -110,17 +143,7 @@ namespace SizingServers.IPC {
 
             return bytes;
         }
-        private byte[] GetBytes(string s) {
-            return Encoding.UTF8.GetBytes(s);
-        }
-        private byte[] GetBytes(object o) {
-            byte[] bytes = null;
-            using (var ms = new MemoryStream()) {
-                _bf.Serialize(ms, o);
-                bytes = ms.GetBuffer();
-            }
-            return bytes;
-        }
+        private byte[] GetBytes(string s) { return Encoding.UTF8.GetBytes(s); }
         private byte[] GetBytes(long l) {
             int size = Marshal.SizeOf(l);
             byte[] arr = new byte[size];
@@ -129,6 +152,17 @@ namespace SizingServers.IPC {
             Marshal.Copy(ptr, arr, 0, size);
             Marshal.FreeHGlobal(ptr);
             return arr;
+        }
+        private byte GetBytes(bool b) {
+            return (byte)(b ? 1 : 0);
+        }
+        private byte[] GetBytes(object o) {
+            byte[] bytes = null;
+            using (var ms = new MemoryStream()) {
+                _bf.Serialize(ms, o);
+                bytes = ms.GetBuffer();
+            }
+            return bytes;
         }
 
         /// <summary>
@@ -148,6 +182,7 @@ namespace SizingServers.IPC {
                 if (!senderFound)
                     newSenders.Add(new TcpClient(), endPoint);
             }
+
             foreach (TcpClient oldSender in _senders.Keys) {
                 bool equals = false;
                 foreach (TcpClient sender in newSenders.Keys)
@@ -201,6 +236,7 @@ namespace SizingServers.IPC {
 
                 _bf = null;
                 Handle = null;
+                _bytes = null;
             }
         }
     }

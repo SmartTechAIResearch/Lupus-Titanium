@@ -58,7 +58,7 @@ namespace SizingServers.IPC {
                     _receiver.Start(1);
                     break;
                 } catch {
-                    //Not important. If it doesn't work the other sender does not exist anymore or the sender will handle it.
+                    //Not important. If it doesn't work the sender does not exist anymore or the sender will handle it.
                 }
 
             _bf = new BinaryFormatter();
@@ -82,7 +82,8 @@ namespace SizingServers.IPC {
         }
 
         /// <summary>
-        /// Reads handle size, handle, message size and message from the stream. If the handle in the message is invalid the connection will be closed.
+        /// <para>Reads handle size, handle, 1 if message is byte array or 0, message size and message from the stream.</para>
+        /// <para>If the handle in the message is invalid the connection will be closed.</para>
         /// </summary>
         /// <param name="client"></param>
         private void HandleReceive(TcpClient client) {
@@ -96,8 +97,12 @@ namespace SizingServers.IPC {
                         string handle = GetString(ReadBytes(str, client.ReceiveBufferSize, handleSize));
 
                         if (handle == Handle) {
+                            bool messageIsByteArray = GetBool(ReadBytes(str, client.ReceiveBufferSize, 1));
                             long messageSize = GetLong(ReadBytes(str, client.ReceiveBufferSize, longSize));
-                            object message = GetObject(ReadBytes(str, client.ReceiveBufferSize, messageSize));
+
+                            byte[] messageBytes = ReadBytes(str, client.ReceiveBufferSize, messageSize);
+
+                            object message = messageIsByteArray ? messageBytes : GetObject(messageBytes);
 
                             if (MessageReceived != null)
                                 MessageReceived(this, new MessageEventArgs() { Message = message });
@@ -107,7 +112,7 @@ namespace SizingServers.IPC {
                         }
                     }
                 } catch {
-                    //Not important. If it doesn't work the other sender does not exist anymore or the sender will handle it.
+                    //Not important. If it doesn't work the sender does not exist anymore or the sender will handle it.
                 }
             }, null);
         }
@@ -140,6 +145,7 @@ namespace SizingServers.IPC {
             return l;
         }
         private string GetString(byte[] bytes) { return Encoding.UTF8.GetString(bytes); }
+        private bool GetBool(byte[] bytes) { return bytes[0] == 1; }
         private object GetObject(byte[] bytes) {
             object o;
             using (var ms = new MemoryStream(bytes))
