@@ -43,27 +43,22 @@
             this.splitContainerRequest = new System.Windows.Forms.SplitContainer();
             this.label1 = new System.Windows.Forms.Label();
             this.fctbRequest = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.contextMenuStripBodies = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tsmCopy = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsmSelectAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainerResponse = new System.Windows.Forms.SplitContainer();
-            this.label2 = new System.Windows.Forms.Label();
-            this.fctbResponse = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.btnGroupIntoUserAction = new System.Windows.Forms.Button();
-            this.btnClearDelete = new System.Windows.Forms.Button();
-            this.pnlLabelBorder = new System.Windows.Forms.Panel();
-            this.rtxtLabel = new System.Windows.Forms.RichTextBox();
-            this.tsmFind = new System.Windows.Forms.ToolStripMenuItem();
             this.tcRequestBody = new Lupus_Titanium.TabControlWithAdjustableBorders();
             this.tpRequestText = new System.Windows.Forms.TabPage();
             this.fctbRequestBody = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.contextMenuStripHeadersAndBodies = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmFind = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsmSelectAll = new System.Windows.Forms.ToolStripMenuItem();
             this.tpRequestHex = new System.Windows.Forms.TabPage();
             this.hexBoxRequest = new Be.Windows.Forms.HexBox();
             this.tpRequestRender = new System.Windows.Forms.TabPage();
             this.picRequest = new System.Windows.Forms.PictureBox();
             this.browserRequest = new Lupus_Titanium.WebRenderer();
+            this.splitContainerResponse = new System.Windows.Forms.SplitContainer();
+            this.label2 = new System.Windows.Forms.Label();
+            this.fctbResponse = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tcResponseBody = new Lupus_Titanium.TabControlWithAdjustableBorders();
             this.tpResponseText = new System.Windows.Forms.TabPage();
             this.fctbResponseBody = new FastColoredTextBoxNS.FastColoredTextBox();
@@ -72,6 +67,11 @@
             this.tpResponseRender = new System.Windows.Forms.TabPage();
             this.picResponse = new System.Windows.Forms.PictureBox();
             this.browserResponse = new Lupus_Titanium.WebRenderer();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.btnGroupIntoUserAction = new System.Windows.Forms.Button();
+            this.btnClearDelete = new System.Windows.Forms.Button();
+            this.pnlLabelBorder = new System.Windows.Forms.Panel();
+            this.rtxtLabel = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRequests)).BeginInit();
             this.contextMenuStripRequests.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerInspectors)).BeginInit();
@@ -83,29 +83,29 @@
             this.splitContainerRequest.Panel2.SuspendLayout();
             this.splitContainerRequest.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fctbRequest)).BeginInit();
-            this.contextMenuStripBodies.SuspendLayout();
+            this.tcRequestBody.SuspendLayout();
+            this.tpRequestText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fctbRequestBody)).BeginInit();
+            this.contextMenuStripHeadersAndBodies.SuspendLayout();
+            this.tpRequestHex.SuspendLayout();
+            this.tpRequestRender.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picRequest)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerResponse)).BeginInit();
             this.splitContainerResponse.Panel1.SuspendLayout();
             this.splitContainerResponse.Panel2.SuspendLayout();
             this.splitContainerResponse.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fctbResponse)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
-            this.pnlLabelBorder.SuspendLayout();
-            this.tcRequestBody.SuspendLayout();
-            this.tpRequestText.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fctbRequestBody)).BeginInit();
-            this.tpRequestHex.SuspendLayout();
-            this.tpRequestRender.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picRequest)).BeginInit();
             this.tcResponseBody.SuspendLayout();
             this.tpResponseText.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fctbResponseBody)).BeginInit();
             this.tpResponseHex.SuspendLayout();
             this.tpResponseRender.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picResponse)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
+            this.pnlLabelBorder.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgvRequests
@@ -312,6 +312,7 @@
             this.fctbRequest.BackBrush = null;
             this.fctbRequest.CharHeight = 15;
             this.fctbRequest.CharWidth = 7;
+            this.fctbRequest.ContextMenuStrip = this.contextMenuStripHeadersAndBodies;
             this.fctbRequest.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.fctbRequest.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.fctbRequest.Font = new System.Drawing.Font("Consolas", 9.75F);
@@ -328,16 +329,85 @@
             this.fctbRequest.WordWrap = true;
             this.fctbRequest.Zoom = 100;
             // 
-            // contextMenuStripBodies
+            // tcRequestBody
             // 
-            this.contextMenuStripBodies.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tcRequestBody.BottomVisible = false;
+            this.tcRequestBody.Controls.Add(this.tpRequestText);
+            this.tcRequestBody.Controls.Add(this.tpRequestHex);
+            this.tcRequestBody.Controls.Add(this.tpRequestRender);
+            this.tcRequestBody.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcRequestBody.LeftVisible = true;
+            this.tcRequestBody.Location = new System.Drawing.Point(0, 0);
+            this.tcRequestBody.Name = "tcRequestBody";
+            this.tcRequestBody.RightVisible = false;
+            this.tcRequestBody.SelectedIndex = 0;
+            this.tcRequestBody.Size = new System.Drawing.Size(96, 100);
+            this.tcRequestBody.TabIndex = 1;
+            this.tcRequestBody.TopVisible = true;
+            // 
+            // tpRequestText
+            // 
+            this.tpRequestText.Controls.Add(this.fctbRequestBody);
+            this.tpRequestText.Location = new System.Drawing.Point(4, 22);
+            this.tpRequestText.Name = "tpRequestText";
+            this.tpRequestText.Padding = new System.Windows.Forms.Padding(3);
+            this.tpRequestText.Size = new System.Drawing.Size(91, 77);
+            this.tpRequestText.TabIndex = 0;
+            this.tpRequestText.Text = "Text";
+            this.tpRequestText.UseVisualStyleBackColor = true;
+            // 
+            // fctbRequestBody
+            // 
+            this.fctbRequestBody.AllowMacroRecording = false;
+            this.fctbRequestBody.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.fctbRequestBody.AutoScrollMinSize = new System.Drawing.Size(0, 15);
+            this.fctbRequestBody.BackBrush = null;
+            this.fctbRequestBody.CharHeight = 15;
+            this.fctbRequestBody.CharWidth = 7;
+            this.fctbRequestBody.ContextMenuStrip = this.contextMenuStripHeadersAndBodies;
+            this.fctbRequestBody.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.fctbRequestBody.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.fctbRequestBody.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fctbRequestBody.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.fctbRequestBody.IsReplaceMode = false;
+            this.fctbRequestBody.Location = new System.Drawing.Point(3, 3);
+            this.fctbRequestBody.Name = "fctbRequestBody";
+            this.fctbRequestBody.Paddings = new System.Windows.Forms.Padding(0);
+            this.fctbRequestBody.ReadOnly = true;
+            this.fctbRequestBody.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.fctbRequestBody.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fctbRequestBody.ServiceColors")));
+            this.fctbRequestBody.Size = new System.Drawing.Size(85, 71);
+            this.fctbRequestBody.TabIndex = 0;
+            this.fctbRequestBody.WordWrap = true;
+            this.fctbRequestBody.Zoom = 100;
+            // 
+            // contextMenuStripHeadersAndBodies
+            // 
+            this.contextMenuStripHeadersAndBodies.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmFind,
             this.tsmCopy,
             this.toolStripSeparator1,
             this.tsmSelectAll});
-            this.contextMenuStripBodies.Name = "contextMenuStripBodies";
-            this.contextMenuStripBodies.Size = new System.Drawing.Size(121, 76);
-            this.contextMenuStripBodies.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripBodies_Opening);
+            this.contextMenuStripHeadersAndBodies.Name = "contextMenuStripBodies";
+            this.contextMenuStripHeadersAndBodies.Size = new System.Drawing.Size(121, 76);
+            this.contextMenuStripHeadersAndBodies.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripBodies_Opening);
+            // 
+            // tsmFind
+            // 
+            this.tsmFind.Name = "tsmFind";
+            this.tsmFind.Size = new System.Drawing.Size(120, 22);
+            this.tsmFind.Text = "Find";
+            this.tsmFind.Click += new System.EventHandler(this.tsmFind_Click);
             // 
             // tsmCopy
             // 
@@ -357,6 +427,62 @@
             this.tsmSelectAll.Size = new System.Drawing.Size(120, 22);
             this.tsmSelectAll.Text = "Select all";
             this.tsmSelectAll.Click += new System.EventHandler(this.tsmSelectAll_Click);
+            // 
+            // tpRequestHex
+            // 
+            this.tpRequestHex.Controls.Add(this.hexBoxRequest);
+            this.tpRequestHex.Location = new System.Drawing.Point(4, 22);
+            this.tpRequestHex.Name = "tpRequestHex";
+            this.tpRequestHex.Padding = new System.Windows.Forms.Padding(3);
+            this.tpRequestHex.Size = new System.Drawing.Size(91, 77);
+            this.tpRequestHex.TabIndex = 3;
+            this.tpRequestHex.Text = "Hex";
+            this.tpRequestHex.UseVisualStyleBackColor = true;
+            // 
+            // hexBoxRequest
+            // 
+            this.hexBoxRequest.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hexBoxRequest.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.hexBoxRequest.LineInfoVisible = true;
+            this.hexBoxRequest.Location = new System.Drawing.Point(3, 3);
+            this.hexBoxRequest.Name = "hexBoxRequest";
+            this.hexBoxRequest.ReadOnly = true;
+            this.hexBoxRequest.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hexBoxRequest.Size = new System.Drawing.Size(85, 71);
+            this.hexBoxRequest.StringViewVisible = true;
+            this.hexBoxRequest.TabIndex = 0;
+            this.hexBoxRequest.UseFixedBytesPerLine = true;
+            this.hexBoxRequest.VScrollBarVisible = true;
+            // 
+            // tpRequestRender
+            // 
+            this.tpRequestRender.AutoScroll = true;
+            this.tpRequestRender.BackColor = System.Drawing.Color.White;
+            this.tpRequestRender.Controls.Add(this.picRequest);
+            this.tpRequestRender.Controls.Add(this.browserRequest);
+            this.tpRequestRender.Location = new System.Drawing.Point(4, 22);
+            this.tpRequestRender.Name = "tpRequestRender";
+            this.tpRequestRender.Padding = new System.Windows.Forms.Padding(3);
+            this.tpRequestRender.Size = new System.Drawing.Size(91, 77);
+            this.tpRequestRender.TabIndex = 1;
+            this.tpRequestRender.Text = "Render";
+            // 
+            // picRequest
+            // 
+            this.picRequest.Location = new System.Drawing.Point(3, 3);
+            this.picRequest.Name = "picRequest";
+            this.picRequest.Size = new System.Drawing.Size(201, 271);
+            this.picRequest.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.picRequest.TabIndex = 1;
+            this.picRequest.TabStop = false;
+            // 
+            // browserRequest
+            // 
+            this.browserRequest.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.browserRequest.Location = new System.Drawing.Point(3, 3);
+            this.browserRequest.Name = "browserRequest";
+            this.browserRequest.Size = new System.Drawing.Size(198, 268);
+            this.browserRequest.TabIndex = 0;
             // 
             // splitContainerResponse
             // 
@@ -412,6 +538,7 @@
             this.fctbResponse.CharHeight = 15;
             this.fctbResponse.CharWidth = 7;
             this.fctbResponse.CommentPrefix = null;
+            this.fctbResponse.ContextMenuStrip = this.contextMenuStripHeadersAndBodies;
             this.fctbResponse.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.fctbResponse.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.fctbResponse.Font = new System.Drawing.Font("Consolas", 9.75F);
@@ -431,6 +558,130 @@
             this.fctbResponse.TabIndex = 2;
             this.fctbResponse.WordWrap = true;
             this.fctbResponse.Zoom = 100;
+            // 
+            // tcResponseBody
+            // 
+            this.tcResponseBody.BottomVisible = false;
+            this.tcResponseBody.Controls.Add(this.tpResponseText);
+            this.tcResponseBody.Controls.Add(this.tpResponseHex);
+            this.tcResponseBody.Controls.Add(this.tpResponseRender);
+            this.tcResponseBody.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcResponseBody.LeftVisible = true;
+            this.tcResponseBody.Location = new System.Drawing.Point(0, 0);
+            this.tcResponseBody.Name = "tcResponseBody";
+            this.tcResponseBody.RightVisible = false;
+            this.tcResponseBody.SelectedIndex = 0;
+            this.tcResponseBody.Size = new System.Drawing.Size(96, 100);
+            this.tcResponseBody.TabIndex = 3;
+            this.tcResponseBody.TopVisible = true;
+            // 
+            // tpResponseText
+            // 
+            this.tpResponseText.Controls.Add(this.fctbResponseBody);
+            this.tpResponseText.Location = new System.Drawing.Point(4, 22);
+            this.tpResponseText.Name = "tpResponseText";
+            this.tpResponseText.Padding = new System.Windows.Forms.Padding(3);
+            this.tpResponseText.Size = new System.Drawing.Size(91, 77);
+            this.tpResponseText.TabIndex = 0;
+            this.tpResponseText.Text = "Text";
+            this.tpResponseText.UseVisualStyleBackColor = true;
+            // 
+            // fctbResponseBody
+            // 
+            this.fctbResponseBody.AllowMacroRecording = false;
+            this.fctbResponseBody.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.fctbResponseBody.AutoIndentCharsPatterns = "";
+            this.fctbResponseBody.AutoScrollMinSize = new System.Drawing.Size(0, 15);
+            this.fctbResponseBody.BackBrush = null;
+            this.fctbResponseBody.CharHeight = 15;
+            this.fctbResponseBody.CharWidth = 7;
+            this.fctbResponseBody.CommentPrefix = null;
+            this.fctbResponseBody.ContextMenuStrip = this.contextMenuStripHeadersAndBodies;
+            this.fctbResponseBody.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.fctbResponseBody.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.fctbResponseBody.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fctbResponseBody.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.fctbResponseBody.IsReplaceMode = false;
+            this.fctbResponseBody.LeftBracket = '<';
+            this.fctbResponseBody.LeftBracket2 = '(';
+            this.fctbResponseBody.Location = new System.Drawing.Point(3, 3);
+            this.fctbResponseBody.Name = "fctbResponseBody";
+            this.fctbResponseBody.Paddings = new System.Windows.Forms.Padding(0);
+            this.fctbResponseBody.ReadOnly = true;
+            this.fctbResponseBody.RightBracket = '>';
+            this.fctbResponseBody.RightBracket2 = ')';
+            this.fctbResponseBody.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.fctbResponseBody.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fctbResponseBody.ServiceColors")));
+            this.fctbResponseBody.Size = new System.Drawing.Size(85, 71);
+            this.fctbResponseBody.TabIndex = 2;
+            this.fctbResponseBody.WordWrap = true;
+            this.fctbResponseBody.Zoom = 100;
+            // 
+            // tpResponseHex
+            // 
+            this.tpResponseHex.Controls.Add(this.hexBoxResponse);
+            this.tpResponseHex.Location = new System.Drawing.Point(4, 22);
+            this.tpResponseHex.Name = "tpResponseHex";
+            this.tpResponseHex.Padding = new System.Windows.Forms.Padding(3);
+            this.tpResponseHex.Size = new System.Drawing.Size(91, 77);
+            this.tpResponseHex.TabIndex = 3;
+            this.tpResponseHex.Text = "Hex";
+            this.tpResponseHex.UseVisualStyleBackColor = true;
+            // 
+            // hexBoxResponse
+            // 
+            this.hexBoxResponse.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hexBoxResponse.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.hexBoxResponse.LineInfoVisible = true;
+            this.hexBoxResponse.Location = new System.Drawing.Point(3, 3);
+            this.hexBoxResponse.Name = "hexBoxResponse";
+            this.hexBoxResponse.ReadOnly = true;
+            this.hexBoxResponse.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hexBoxResponse.Size = new System.Drawing.Size(85, 71);
+            this.hexBoxResponse.StringViewVisible = true;
+            this.hexBoxResponse.TabIndex = 1;
+            this.hexBoxResponse.UseFixedBytesPerLine = true;
+            this.hexBoxResponse.VScrollBarVisible = true;
+            // 
+            // tpResponseRender
+            // 
+            this.tpResponseRender.AutoScroll = true;
+            this.tpResponseRender.BackColor = System.Drawing.Color.White;
+            this.tpResponseRender.Controls.Add(this.picResponse);
+            this.tpResponseRender.Controls.Add(this.browserResponse);
+            this.tpResponseRender.Location = new System.Drawing.Point(4, 22);
+            this.tpResponseRender.Name = "tpResponseRender";
+            this.tpResponseRender.Padding = new System.Windows.Forms.Padding(3);
+            this.tpResponseRender.Size = new System.Drawing.Size(91, 77);
+            this.tpResponseRender.TabIndex = 1;
+            this.tpResponseRender.Text = "Render";
+            // 
+            // picResponse
+            // 
+            this.picResponse.Location = new System.Drawing.Point(3, 3);
+            this.picResponse.Name = "picResponse";
+            this.picResponse.Size = new System.Drawing.Size(201, 382);
+            this.picResponse.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.picResponse.TabIndex = 1;
+            this.picResponse.TabStop = false;
+            // 
+            // browserResponse
+            // 
+            this.browserResponse.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.browserResponse.Location = new System.Drawing.Point(3, 3);
+            this.browserResponse.Name = "browserResponse";
+            this.browserResponse.Size = new System.Drawing.Size(198, 379);
+            this.browserResponse.TabIndex = 0;
             // 
             // splitContainer
             // 
@@ -519,255 +770,6 @@
             this.rtxtLabel.WordWrap = false;
             this.rtxtLabel.TextChanged += new System.EventHandler(this.rtxtLabel_TextChanged);
             // 
-            // tsmFind
-            // 
-            this.tsmFind.Name = "tsmFind";
-            this.tsmFind.Size = new System.Drawing.Size(120, 22);
-            this.tsmFind.Text = "Find";
-            this.tsmFind.Click += new System.EventHandler(this.tsmFind_Click);
-            // 
-            // tcRequestBody
-            // 
-            this.tcRequestBody.BottomVisible = false;
-            this.tcRequestBody.Controls.Add(this.tpRequestText);
-            this.tcRequestBody.Controls.Add(this.tpRequestHex);
-            this.tcRequestBody.Controls.Add(this.tpRequestRender);
-            this.tcRequestBody.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcRequestBody.LeftVisible = true;
-            this.tcRequestBody.Location = new System.Drawing.Point(0, 0);
-            this.tcRequestBody.Name = "tcRequestBody";
-            this.tcRequestBody.RightVisible = false;
-            this.tcRequestBody.SelectedIndex = 0;
-            this.tcRequestBody.Size = new System.Drawing.Size(96, 100);
-            this.tcRequestBody.TabIndex = 1;
-            this.tcRequestBody.TopVisible = true;
-            // 
-            // tpRequestText
-            // 
-            this.tpRequestText.Controls.Add(this.fctbRequestBody);
-            this.tpRequestText.Location = new System.Drawing.Point(4, 22);
-            this.tpRequestText.Name = "tpRequestText";
-            this.tpRequestText.Padding = new System.Windows.Forms.Padding(3);
-            this.tpRequestText.Size = new System.Drawing.Size(91, 77);
-            this.tpRequestText.TabIndex = 0;
-            this.tpRequestText.Text = "Text";
-            this.tpRequestText.UseVisualStyleBackColor = true;
-            // 
-            // fctbRequestBody
-            // 
-            this.fctbRequestBody.AllowMacroRecording = false;
-            this.fctbRequestBody.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.fctbRequestBody.AutoScrollMinSize = new System.Drawing.Size(0, 15);
-            this.fctbRequestBody.BackBrush = null;
-            this.fctbRequestBody.CharHeight = 15;
-            this.fctbRequestBody.CharWidth = 7;
-            this.fctbRequestBody.ContextMenuStrip = this.contextMenuStripBodies;
-            this.fctbRequestBody.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.fctbRequestBody.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.fctbRequestBody.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fctbRequestBody.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.fctbRequestBody.IsReplaceMode = false;
-            this.fctbRequestBody.Location = new System.Drawing.Point(3, 3);
-            this.fctbRequestBody.Name = "fctbRequestBody";
-            this.fctbRequestBody.Paddings = new System.Windows.Forms.Padding(0);
-            this.fctbRequestBody.ReadOnly = true;
-            this.fctbRequestBody.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            this.fctbRequestBody.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fctbRequestBody.ServiceColors")));
-            this.fctbRequestBody.Size = new System.Drawing.Size(85, 71);
-            this.fctbRequestBody.TabIndex = 0;
-            this.fctbRequestBody.WordWrap = true;
-            this.fctbRequestBody.Zoom = 100;
-            // 
-            // tpRequestHex
-            // 
-            this.tpRequestHex.Controls.Add(this.hexBoxRequest);
-            this.tpRequestHex.Location = new System.Drawing.Point(4, 22);
-            this.tpRequestHex.Name = "tpRequestHex";
-            this.tpRequestHex.Padding = new System.Windows.Forms.Padding(3);
-            this.tpRequestHex.Size = new System.Drawing.Size(91, 77);
-            this.tpRequestHex.TabIndex = 3;
-            this.tpRequestHex.Text = "Hex";
-            this.tpRequestHex.UseVisualStyleBackColor = true;
-            // 
-            // hexBoxRequest
-            // 
-            this.hexBoxRequest.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hexBoxRequest.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.hexBoxRequest.LineInfoVisible = true;
-            this.hexBoxRequest.Location = new System.Drawing.Point(3, 3);
-            this.hexBoxRequest.Name = "hexBoxRequest";
-            this.hexBoxRequest.ReadOnly = true;
-            this.hexBoxRequest.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hexBoxRequest.Size = new System.Drawing.Size(85, 71);
-            this.hexBoxRequest.StringViewVisible = true;
-            this.hexBoxRequest.TabIndex = 0;
-            this.hexBoxRequest.UseFixedBytesPerLine = true;
-            this.hexBoxRequest.VScrollBarVisible = true;
-            // 
-            // tpRequestRender
-            // 
-            this.tpRequestRender.AutoScroll = true;
-            this.tpRequestRender.BackColor = System.Drawing.Color.White;
-            this.tpRequestRender.Controls.Add(this.picRequest);
-            this.tpRequestRender.Controls.Add(this.browserRequest);
-            this.tpRequestRender.Location = new System.Drawing.Point(4, 22);
-            this.tpRequestRender.Name = "tpRequestRender";
-            this.tpRequestRender.Padding = new System.Windows.Forms.Padding(3);
-            this.tpRequestRender.Size = new System.Drawing.Size(91, 77);
-            this.tpRequestRender.TabIndex = 1;
-            this.tpRequestRender.Text = "Render";
-            // 
-            // picRequest
-            // 
-            this.picRequest.Location = new System.Drawing.Point(3, 3);
-            this.picRequest.Name = "picRequest";
-            this.picRequest.Size = new System.Drawing.Size(201, 271);
-            this.picRequest.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.picRequest.TabIndex = 1;
-            this.picRequest.TabStop = false;
-            // 
-            // browserRequest
-            // 
-            this.browserRequest.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.browserRequest.Location = new System.Drawing.Point(3, 3);
-            this.browserRequest.Name = "browserRequest";
-            this.browserRequest.Size = new System.Drawing.Size(198, 268);
-            this.browserRequest.TabIndex = 0;
-            // 
-            // tcResponseBody
-            // 
-            this.tcResponseBody.BottomVisible = false;
-            this.tcResponseBody.Controls.Add(this.tpResponseText);
-            this.tcResponseBody.Controls.Add(this.tpResponseHex);
-            this.tcResponseBody.Controls.Add(this.tpResponseRender);
-            this.tcResponseBody.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcResponseBody.LeftVisible = true;
-            this.tcResponseBody.Location = new System.Drawing.Point(0, 0);
-            this.tcResponseBody.Name = "tcResponseBody";
-            this.tcResponseBody.RightVisible = false;
-            this.tcResponseBody.SelectedIndex = 0;
-            this.tcResponseBody.Size = new System.Drawing.Size(96, 100);
-            this.tcResponseBody.TabIndex = 3;
-            this.tcResponseBody.TopVisible = true;
-            // 
-            // tpResponseText
-            // 
-            this.tpResponseText.Controls.Add(this.fctbResponseBody);
-            this.tpResponseText.Location = new System.Drawing.Point(4, 22);
-            this.tpResponseText.Name = "tpResponseText";
-            this.tpResponseText.Padding = new System.Windows.Forms.Padding(3);
-            this.tpResponseText.Size = new System.Drawing.Size(91, 77);
-            this.tpResponseText.TabIndex = 0;
-            this.tpResponseText.Text = "Text";
-            this.tpResponseText.UseVisualStyleBackColor = true;
-            // 
-            // fctbResponseBody
-            // 
-            this.fctbResponseBody.AllowMacroRecording = false;
-            this.fctbResponseBody.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.fctbResponseBody.AutoIndentCharsPatterns = "";
-            this.fctbResponseBody.AutoScrollMinSize = new System.Drawing.Size(0, 15);
-            this.fctbResponseBody.BackBrush = null;
-            this.fctbResponseBody.CharHeight = 15;
-            this.fctbResponseBody.CharWidth = 7;
-            this.fctbResponseBody.CommentPrefix = null;
-            this.fctbResponseBody.ContextMenuStrip = this.contextMenuStripBodies;
-            this.fctbResponseBody.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.fctbResponseBody.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.fctbResponseBody.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fctbResponseBody.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.fctbResponseBody.IsReplaceMode = false;
-            this.fctbResponseBody.LeftBracket = '<';
-            this.fctbResponseBody.LeftBracket2 = '(';
-            this.fctbResponseBody.Location = new System.Drawing.Point(3, 3);
-            this.fctbResponseBody.Name = "fctbResponseBody";
-            this.fctbResponseBody.Paddings = new System.Windows.Forms.Padding(0);
-            this.fctbResponseBody.ReadOnly = true;
-            this.fctbResponseBody.RightBracket = '>';
-            this.fctbResponseBody.RightBracket2 = ')';
-            this.fctbResponseBody.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            this.fctbResponseBody.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fctbResponseBody.ServiceColors")));
-            this.fctbResponseBody.Size = new System.Drawing.Size(85, 71);
-            this.fctbResponseBody.TabIndex = 2;
-            this.fctbResponseBody.WordWrap = true;
-            this.fctbResponseBody.Zoom = 100;
-            // 
-            // tpResponseHex
-            // 
-            this.tpResponseHex.Controls.Add(this.hexBoxResponse);
-            this.tpResponseHex.Location = new System.Drawing.Point(4, 22);
-            this.tpResponseHex.Name = "tpResponseHex";
-            this.tpResponseHex.Padding = new System.Windows.Forms.Padding(3);
-            this.tpResponseHex.Size = new System.Drawing.Size(91, 77);
-            this.tpResponseHex.TabIndex = 3;
-            this.tpResponseHex.Text = "Hex";
-            this.tpResponseHex.UseVisualStyleBackColor = true;
-            // 
-            // hexBoxResponse
-            // 
-            this.hexBoxResponse.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hexBoxResponse.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.hexBoxResponse.LineInfoVisible = true;
-            this.hexBoxResponse.Location = new System.Drawing.Point(3, 3);
-            this.hexBoxResponse.Name = "hexBoxResponse";
-            this.hexBoxResponse.ReadOnly = true;
-            this.hexBoxResponse.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hexBoxResponse.Size = new System.Drawing.Size(85, 71);
-            this.hexBoxResponse.StringViewVisible = true;
-            this.hexBoxResponse.TabIndex = 1;
-            this.hexBoxResponse.UseFixedBytesPerLine = true;
-            this.hexBoxResponse.VScrollBarVisible = true;
-            // 
-            // tpResponseRender
-            // 
-            this.tpResponseRender.AutoScroll = true;
-            this.tpResponseRender.BackColor = System.Drawing.Color.White;
-            this.tpResponseRender.Controls.Add(this.picResponse);
-            this.tpResponseRender.Controls.Add(this.browserResponse);
-            this.tpResponseRender.Location = new System.Drawing.Point(4, 22);
-            this.tpResponseRender.Name = "tpResponseRender";
-            this.tpResponseRender.Padding = new System.Windows.Forms.Padding(3);
-            this.tpResponseRender.Size = new System.Drawing.Size(91, 77);
-            this.tpResponseRender.TabIndex = 1;
-            this.tpResponseRender.Text = "Render";
-            // 
-            // picResponse
-            // 
-            this.picResponse.Location = new System.Drawing.Point(3, 3);
-            this.picResponse.Name = "picResponse";
-            this.picResponse.Size = new System.Drawing.Size(201, 382);
-            this.picResponse.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.picResponse.TabIndex = 1;
-            this.picResponse.TabStop = false;
-            // 
-            // browserResponse
-            // 
-            this.browserResponse.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.browserResponse.Location = new System.Drawing.Point(3, 3);
-            this.browserResponse.Name = "browserResponse";
-            this.browserResponse.Size = new System.Drawing.Size(198, 379);
-            this.browserResponse.TabIndex = 0;
-            // 
             // RequestsInspectorPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -791,25 +793,20 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerRequest)).EndInit();
             this.splitContainerRequest.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fctbRequest)).EndInit();
-            this.contextMenuStripBodies.ResumeLayout(false);
+            this.tcRequestBody.ResumeLayout(false);
+            this.tpRequestText.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.fctbRequestBody)).EndInit();
+            this.contextMenuStripHeadersAndBodies.ResumeLayout(false);
+            this.tpRequestHex.ResumeLayout(false);
+            this.tpRequestRender.ResumeLayout(false);
+            this.tpRequestRender.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picRequest)).EndInit();
             this.splitContainerResponse.Panel1.ResumeLayout(false);
             this.splitContainerResponse.Panel1.PerformLayout();
             this.splitContainerResponse.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerResponse)).EndInit();
             this.splitContainerResponse.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fctbResponse)).EndInit();
-            this.splitContainer.Panel1.ResumeLayout(false);
-            this.splitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
-            this.pnlLabelBorder.ResumeLayout(false);
-            this.tcRequestBody.ResumeLayout(false);
-            this.tpRequestText.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.fctbRequestBody)).EndInit();
-            this.tpRequestHex.ResumeLayout(false);
-            this.tpRequestRender.ResumeLayout(false);
-            this.tpRequestRender.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picRequest)).EndInit();
             this.tcResponseBody.ResumeLayout(false);
             this.tpResponseText.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fctbResponseBody)).EndInit();
@@ -817,6 +814,11 @@
             this.tpResponseRender.ResumeLayout(false);
             this.tpResponseRender.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picResponse)).EndInit();
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+            this.splitContainer.ResumeLayout(false);
+            this.pnlLabelBorder.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -855,7 +857,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn clmProtocol;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmResult;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmMethod;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripBodies;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripHeadersAndBodies;
         private System.Windows.Forms.ToolStripMenuItem tsmCopy;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem tsmSelectAll;

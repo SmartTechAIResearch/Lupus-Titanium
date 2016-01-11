@@ -24,6 +24,8 @@ namespace Lupus_Titanium {
     public partial class CaptureControl : UserControl {
         public event EventHandler StartClicked, StopClicked;
 
+        private ManualResetEvent _initWaitHandle = new ManualResetEvent(false);
+
         #region Fields
         private Scenario _scenario;
         private string[] _defaultFilter = { "addthis.com", "cloudflare.com", "facebook.com", "google.com", "google-analytics.com", "googleapis.com", "linkedin.com",
@@ -92,9 +94,6 @@ namespace Lupus_Titanium {
                 }
             } catch {
             }
-
-            InitScenario();
-            VisualizeFilter();
         }
 
         private void ParentForm_HandleCreated(object sender, EventArgs e) {
@@ -102,12 +101,15 @@ namespace Lupus_Titanium {
             LoadProperties();
             SynchronizationContextWrapper.SynchronizationContext = SynchronizationContext.Current;
             ParentForm.FormClosing += ParentForm_FormClosing;
+
+            InitScenario();
+            VisualizeFilter();
+
+            _initWaitHandle.Set();
         }
 
         private void InitScenario() {
             _scenario = new Scenario();
-
-            RequestsSerializerServer.Start(_scenario, RequestSerializerServerPort);
 
             requestsInspectorPanel.Scenario = _scenario;
             _scenario.Init(flpScenario);
@@ -178,9 +180,17 @@ namespace Lupus_Titanium {
                 btnPauseContinue.Visible = false;
                 filterRequestsPanel.Enabled = true;
             }
-            //filterRequestsPanel.Visible = false;
         }
 
+        /// <summary>
+        /// </summary>
+        public void StartStopCapturing() {
+            ThreadPool.QueueUserWorkItem((state) => {
+                _initWaitHandle.WaitOne();
+                SynchronizationContextWrapper.SynchronizationContext.Send((x) => btnStartStop.PerformClick(), null);
+            }, null);
+        }
+        
         private void btnPauseContinue_Click(object sender, EventArgs e) {
             if (btnPauseContinue.Text == "Pause") {
                 btnPauseContinue.Text = "Continue";
@@ -232,10 +242,6 @@ namespace Lupus_Titanium {
             SaveProperties();
         }
 
-        public void CancelStart() {
-            if (btnStartStop.Text == "Stop")
-                btnStartStop.PerformClick();
-        }
         #endregion
     }
 }

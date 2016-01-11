@@ -17,11 +17,11 @@ namespace Lupus_Titanium_GUI {
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main(string[] args) {
             if (_namedMutex.WaitOne(0, true)) {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new Main());
+                Application.Run(new Main(args));
             }
         }
     }

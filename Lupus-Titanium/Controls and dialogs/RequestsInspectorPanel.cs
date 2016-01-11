@@ -436,22 +436,22 @@ namespace Lupus_Titanium.Controls_and_dialogs {
         }
 
         private void tsmFind_Click(object sender, EventArgs e) {
-            var ctrl = contextMenuStripBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
+            var ctrl = contextMenuStripHeadersAndBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
             ctrl.ShowFindDialog();
         }
 
         private void tsmCopy_Click(object sender, EventArgs e) {
-            var ctrl = contextMenuStripBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
+            var ctrl = contextMenuStripHeadersAndBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
             ctrl.Copy();
         }
 
         private void tsmSelectAll_Click(object sender, EventArgs e) {
-            var ctrl = contextMenuStripBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
+            var ctrl = contextMenuStripHeadersAndBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
             ctrl.SelectAll();
         }
 
         private void contextMenuStripBodies_Opening(object sender, CancelEventArgs e) {
-            var ctrl = contextMenuStripBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
+            var ctrl = contextMenuStripHeadersAndBodies.SourceControl as FastColoredTextBoxNS.FastColoredTextBox;
             tsmCopy.Enabled = ctrl.SelectedText.Length != 0;
             tsmSelectAll.Enabled = ctrl.Text.Length != 0;
         }

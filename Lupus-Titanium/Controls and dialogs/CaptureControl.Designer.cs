@@ -13,6 +13,7 @@
             if (disposing && (components != null)) {
                 components.Dispose();
             }
+            _initWaitHandle.Set();
             base.Dispose(disposing);
         }
 

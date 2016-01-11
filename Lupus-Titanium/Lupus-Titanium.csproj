@@ -106,8 +106,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RequestsSerializer.cs" />
-    <Compile Include="RequestsSerializerServer.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="TextualContentFormatter.cs" />
     <Compile Include="TitaniumProxy.cs" />
     <Compile Include="Controls and dialogs\InputDialog.cs">
@@ -188,12 +186,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="makecert.exe">
+    <None Include="makecert.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Tutorial.txt">
+    </None>
+    <None Include="Tutorial.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

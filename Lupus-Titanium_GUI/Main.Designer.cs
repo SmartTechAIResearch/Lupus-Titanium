@@ -40,6 +40,7 @@
             this.captureControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.captureControl.Location = new System.Drawing.Point(0, 0);
             this.captureControl.Name = "captureControl";
+            this.captureControl.RequestSerializerServerPort = 9990;
             this.captureControl.Size = new System.Drawing.Size(784, 561);
             this.captureControl.TabIndex = 0;
             this.captureControl.StopClicked += new System.EventHandler(this.captureControl_StopClicked);
@@ -63,6 +64,5 @@
 
         private Lupus_Titanium.CaptureControl captureControl;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
-
     }
 }
