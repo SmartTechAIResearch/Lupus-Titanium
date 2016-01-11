@@ -94,47 +94,58 @@ namespace Lupus_Titanium {
         }
 
         private void VisualizeFind(bool selectNext = true) {
+            dgvFindResults.SelectionChanged -= dgvFindResults_SelectionChanged;
+            dgvFindResults.RowEnter -= dgvFindResults_RowEnter;
+
+            if (CleanupDeletedFoundRequests()) {
+                _selectedRow = -1;
+                selectNext = true;
+
+                dgvFindResults.RowCount = 0;
+            }
+
             int count = _foundRequests.Count;
             if (count == 0) {
                 this.Height = 35;
                 btnFindNext.Enabled = false;
-            } else {
-                if (selectNext) {
-                    if (++_selectedRow >= _foundRequests.Count) _selectedRow = 0;
+            } else {                
+                if (selectNext && ++_selectedRow >= _foundRequests.Count) _selectedRow = 0;
+                
+                if (_find != _previousFind)
+                    dgvFindResults.RowCount = 0;
+                dgvFindResults.RowCount = count;
 
-                    if (_selectedRow == 0) {
-                        dgvFindResults.RowEnter -= dgvFindResults_RowEnter;
+                dgvFindResults.Rows[_selectedRow].Selected = true;
+                dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
 
-                        if (_find == _previousFind) {
-                            dgvFindResults.Rows[_selectedRow].Selected = true;
-                            dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
-                        } else {
-                            dgvFindResults.RowCount = 0;
-                            dgvFindResults.RowCount = count;
-                        }
-
-                        dgvFindResults.RowEnter += dgvFindResults_RowEnter;
-                    } else {
-                        dgvFindResults.SelectionChanged -= dgvFindResults_SelectionChanged;
-                        dgvFindResults.RowEnter -= dgvFindResults_RowEnter;
-
-                        if (_find != _previousFind) {
-                            dgvFindResults.RowCount = 0;
-                            dgvFindResults.RowCount = count;
-                        }
-
-                        dgvFindResults.RowEnter += dgvFindResults_RowEnter;
-                        dgvFindResults.SelectionChanged += dgvFindResults_SelectionChanged;
-
-                        dgvFindResults.Rows[_selectedRow].Selected = true;
-                        dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
-                    }
-                }
+                if (OnFindSelectionChanged != null)
+                    OnFindSelectionChanged(this, new OnFindSelectionChangedEventArgs(_find, _foundRequests[_selectedRow]));
 
                 btnFindNext.Enabled = true;
                 lblFound.Text = count + " found";
                 this.Height = 140;
             }
+
+            dgvFindResults.RowEnter += dgvFindResults_RowEnter;
+            dgvFindResults.SelectionChanged += dgvFindResults_SelectionChanged;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>True on cleanup done.</returns>
+        private bool CleanupDeletedFoundRequests() {
+            var foundRequests = new List<Request>();
+            if (_foundRequests != null)
+                foreach (Request request in _foundRequests) {
+                    UserAction parent = request.ParentUserAction;
+                    if (parent != null && parent.Requests.Contains(request))
+                        foundRequests.Add(request);
+                }
+
+            bool cleanup = _foundRequests.Count != foundRequests.Count;
+            _foundRequests = foundRequests;
+            return cleanup;
         }
 
         private void btnFindNext_Click(object sender, EventArgs e) { Find(rtxtFind.Text); }
