@@ -9,6 +9,7 @@ using SizingServers.IPC;
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace Lupus_Titanium_GUI {
     public partial class Main : Form {
@@ -24,7 +25,7 @@ namespace Lupus_Titanium_GUI {
             if (args.Length != 0) {
                 if (args[0].StartsWith("ipc"))
                     _handle = args[0];
-                else if (args[0] == "autocapture")
+                if (args.Contains("autocapture"))
                     captureControl.StartStopCapturing();
             }
         }
