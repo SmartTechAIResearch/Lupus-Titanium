@@ -96,7 +96,7 @@ namespace Lupus_Titanium {
 
         private void ProxyServer_BeforeResponse(object sender, SessionEventArgs session) {
             lock (_lock)
-                if (CanCapture(session, _filter))
+                if (CanCapture(session, _filter)) {
                     foreach (Request request in _requests)
                         if (request.EqualsSession(session)) {
                             request.SetResponse();
@@ -104,6 +104,7 @@ namespace Lupus_Titanium {
                                 BeforeResponse(this, new OnRequestEventArgs(request));
                             break;
                         }
+                }
         }
 
 
