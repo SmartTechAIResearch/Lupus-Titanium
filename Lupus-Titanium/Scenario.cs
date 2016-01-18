@@ -125,7 +125,7 @@ namespace Lupus_Titanium {
         /// <param name="userActionLabel"></param>
         /// <returns></returns>
         public UserAction PushFromUngroupedToNew(string userActionLabel) {
-            PauseCapturing();
+            //PauseCapturing();
             var userAction = new UserAction(userActionLabel, this);
             foreach (var request in _ungroupedRequests.Requests) {
                 request.ParentUserAction = userAction;
@@ -147,7 +147,7 @@ namespace Lupus_Titanium {
 
             HandleClickedControl(_ungroupedRequests.UserActionControl);
 
-            ContinueCapturing();
+            //ContinueCapturing();
 
             return userAction;
         }
