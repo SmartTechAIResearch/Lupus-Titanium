@@ -338,16 +338,25 @@ namespace Lupus_Titanium {
         /// <param name="newLine"></param>
         /// <param name="cariageReturn"></param>
         /// <returns> 
-        /// <para>Relative url<![CDATA[<16 0C 02 12 $>]]>Request method<![CDATA[<16 0C 02 12 $>]]>Get data (&-delimited KVPs)<![CDATA[<16 0C 02 12 $>]]>Post data (UTF8)<![CDATA[<16 0C 02 12 $>]]>Post data (bytes as hex)</para> 
-        /// <para><![CDATA[<16 0C 02 12 $>]]>Content type<![CDATA[<16 0C 02 12 $>]]>Accept<![CDATA[<16 0C 02 12 $>]]>Protocol<![CDATA[<16 0C 02 12 $>]]>Destination host<![CDATA[<16 0C 02 12 $>]]>Destination port</para> 
+        /// <para>Request method<![CDATA[<16 0C 02 12 $>]]>Protocol<![CDATA[<16 0C 02 12 $>]]>Destination host<![CDATA[<16 0C 02 12 $>]]>Destination port<![CDATA[<16 0C 02 12 $>]]>Relative url<![CDATA[<16 0C 02 12 $>]]></para> 
+        /// <para> Get data (&-delimited KVPs)<![CDATA[<16 0C 02 12 $>]]>Post data (UTF8)<![CDATA[<16 0C 02 12 $>]]>Post data (bytes as hex)<![CDATA[<16 0C 02 12 $>]]>Content type<![CDATA[<16 0C 02 12 $>]]>Accept</para> 
         /// <para><![CDATA[<16 0C 02 12 $>]]>Offset<![CDATA[<16 0C 02 12 $>]]>Redirects</para> 
         /// </returns>
         public string ConvertToFlat(string delimiter = "<16 0C 02 12$>", string newLine = "<16 0C 02 12n>", string carriageReturn = "<16 0C 02 12r>") {
             var sb = new StringBuilder();
-            sb.Append(RelativeUrl);
+            sb.Append(RequestMethod);
             sb.Append(delimiter);
 
-            sb.Append(RequestMethod);
+            sb.Append(Protocol);
+            sb.Append(delimiter);
+
+            sb.Append(DestinationHost);
+            sb.Append(delimiter);
+
+            sb.Append(DestinationPort);
+            sb.Append(delimiter);
+
+            sb.Append(RelativeUrl);
             sb.Append(delimiter);
 
             sb.Append(GetData);
@@ -363,15 +372,6 @@ namespace Lupus_Titanium {
             sb.Append(delimiter);
 
             sb.Append(Accept);
-            sb.Append(delimiter);
-
-            sb.Append(Protocol);
-            sb.Append(delimiter);
-
-            sb.Append(DestinationHost);
-            sb.Append(delimiter);
-
-            sb.Append(DestinationPort);
             sb.Append(delimiter);
 
             sb.Append(Referer);
