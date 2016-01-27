@@ -145,7 +145,7 @@ namespace Lupus_Titanium {
             get {
                 if (_httpVersion == null) {
                     var v = _session.GetType().GetProperty("RequestHttpVersion", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_session) as Version;
-                    _httpVersion = string.Format("/{0}.{1}", v.Major, v.Minor);
+                    _httpVersion = string.Format("{0}.{1}", v.Major, v.Minor);
                 }
                 return _httpVersion;
             }

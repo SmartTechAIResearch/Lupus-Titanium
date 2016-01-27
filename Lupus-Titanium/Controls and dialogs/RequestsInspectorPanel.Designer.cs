@@ -43,14 +43,14 @@
             this.splitContainerRequest = new System.Windows.Forms.SplitContainer();
             this.label1 = new System.Windows.Forms.Label();
             this.fctbRequest = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.tcRequestBody = new Lupus_Titanium.TabControlWithAdjustableBorders();
-            this.tpRequestText = new System.Windows.Forms.TabPage();
-            this.fctbRequestBody = new FastColoredTextBoxNS.FastColoredTextBox();
             this.contextMenuStripHeadersAndBodies = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmFind = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmSelectAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.tcRequestBody = new Lupus_Titanium.TabControlWithAdjustableBorders();
+            this.tpRequestText = new System.Windows.Forms.TabPage();
+            this.fctbRequestBody = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tpRequestHex = new System.Windows.Forms.TabPage();
             this.hexBoxRequest = new Be.Windows.Forms.HexBox();
             this.tpRequestRender = new System.Windows.Forms.TabPage();
@@ -83,10 +83,10 @@
             this.splitContainerRequest.Panel2.SuspendLayout();
             this.splitContainerRequest.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fctbRequest)).BeginInit();
+            this.contextMenuStripHeadersAndBodies.SuspendLayout();
             this.tcRequestBody.SuspendLayout();
             this.tpRequestText.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fctbRequestBody)).BeginInit();
-            this.contextMenuStripHeadersAndBodies.SuspendLayout();
             this.tpRequestHex.SuspendLayout();
             this.tpRequestRender.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picRequest)).BeginInit();
@@ -329,6 +329,43 @@
             this.fctbRequest.WordWrap = true;
             this.fctbRequest.Zoom = 100;
             // 
+            // contextMenuStripHeadersAndBodies
+            // 
+            this.contextMenuStripHeadersAndBodies.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmFind,
+            this.tsmCopy,
+            this.toolStripSeparator1,
+            this.tsmSelectAll});
+            this.contextMenuStripHeadersAndBodies.Name = "contextMenuStripBodies";
+            this.contextMenuStripHeadersAndBodies.Size = new System.Drawing.Size(121, 76);
+            this.contextMenuStripHeadersAndBodies.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripBodies_Opening);
+            // 
+            // tsmFind
+            // 
+            this.tsmFind.Name = "tsmFind";
+            this.tsmFind.Size = new System.Drawing.Size(120, 22);
+            this.tsmFind.Text = "Find";
+            this.tsmFind.Click += new System.EventHandler(this.tsmFind_Click);
+            // 
+            // tsmCopy
+            // 
+            this.tsmCopy.Name = "tsmCopy";
+            this.tsmCopy.Size = new System.Drawing.Size(120, 22);
+            this.tsmCopy.Text = "Copy";
+            this.tsmCopy.Click += new System.EventHandler(this.tsmCopy_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(117, 6);
+            // 
+            // tsmSelectAll
+            // 
+            this.tsmSelectAll.Name = "tsmSelectAll";
+            this.tsmSelectAll.Size = new System.Drawing.Size(120, 22);
+            this.tsmSelectAll.Text = "Select all";
+            this.tsmSelectAll.Click += new System.EventHandler(this.tsmSelectAll_Click);
+            // 
             // tcRequestBody
             // 
             this.tcRequestBody.BottomVisible = false;
@@ -390,43 +427,6 @@
             this.fctbRequestBody.TabIndex = 0;
             this.fctbRequestBody.WordWrap = true;
             this.fctbRequestBody.Zoom = 100;
-            // 
-            // contextMenuStripHeadersAndBodies
-            // 
-            this.contextMenuStripHeadersAndBodies.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmFind,
-            this.tsmCopy,
-            this.toolStripSeparator1,
-            this.tsmSelectAll});
-            this.contextMenuStripHeadersAndBodies.Name = "contextMenuStripBodies";
-            this.contextMenuStripHeadersAndBodies.Size = new System.Drawing.Size(121, 76);
-            this.contextMenuStripHeadersAndBodies.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripBodies_Opening);
-            // 
-            // tsmFind
-            // 
-            this.tsmFind.Name = "tsmFind";
-            this.tsmFind.Size = new System.Drawing.Size(120, 22);
-            this.tsmFind.Text = "Find";
-            this.tsmFind.Click += new System.EventHandler(this.tsmFind_Click);
-            // 
-            // tsmCopy
-            // 
-            this.tsmCopy.Name = "tsmCopy";
-            this.tsmCopy.Size = new System.Drawing.Size(120, 22);
-            this.tsmCopy.Text = "Copy";
-            this.tsmCopy.Click += new System.EventHandler(this.tsmCopy_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(117, 6);
-            // 
-            // tsmSelectAll
-            // 
-            this.tsmSelectAll.Name = "tsmSelectAll";
-            this.tsmSelectAll.Size = new System.Drawing.Size(120, 22);
-            this.tsmSelectAll.Text = "Select all";
-            this.tsmSelectAll.Click += new System.EventHandler(this.tsmSelectAll_Click);
             // 
             // tpRequestHex
             // 
@@ -706,16 +706,15 @@
             // 
             this.btnGroupIntoUserAction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGroupIntoUserAction.AutoSize = true;
-            this.btnGroupIntoUserAction.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnGroupIntoUserAction.BackColor = System.Drawing.Color.White;
             this.btnGroupIntoUserAction.Enabled = false;
             this.btnGroupIntoUserAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGroupIntoUserAction.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGroupIntoUserAction.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnGroupIntoUserAction.Location = new System.Drawing.Point(1071, 6);
+            this.btnGroupIntoUserAction.Location = new System.Drawing.Point(923, 6);
             this.btnGroupIntoUserAction.MaximumSize = new System.Drawing.Size(9999, 24);
             this.btnGroupIntoUserAction.Name = "btnGroupIntoUserAction";
-            this.btnGroupIntoUserAction.Size = new System.Drawing.Size(53, 24);
+            this.btnGroupIntoUserAction.Size = new System.Drawing.Size(200, 24);
             this.btnGroupIntoUserAction.TabIndex = 42;
             this.btnGroupIntoUserAction.Text = "Group";
             this.btnGroupIntoUserAction.UseVisualStyleBackColor = false;
@@ -731,7 +730,7 @@
             this.btnClearDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClearDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnClearDelete.Location = new System.Drawing.Point(1009, 6);
+            this.btnClearDelete.Location = new System.Drawing.Point(861, 6);
             this.btnClearDelete.MaximumSize = new System.Drawing.Size(9999, 24);
             this.btnClearDelete.Name = "btnClearDelete";
             this.btnClearDelete.Size = new System.Drawing.Size(56, 24);
@@ -742,29 +741,27 @@
             // 
             // pnlLabelBorder
             // 
-            this.pnlLabelBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlLabelBorder.BackColor = System.Drawing.Color.White;
             this.pnlLabelBorder.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlLabelBorder.Controls.Add(this.rtxtLabel);
             this.pnlLabelBorder.Location = new System.Drawing.Point(3, 6);
+            this.pnlLabelBorder.MaximumSize = new System.Drawing.Size(509, 24);
             this.pnlLabelBorder.Name = "pnlLabelBorder";
             this.pnlLabelBorder.Padding = new System.Windows.Forms.Padding(1);
-            this.pnlLabelBorder.Size = new System.Drawing.Size(1000, 24);
+            this.pnlLabelBorder.Size = new System.Drawing.Size(509, 24);
             this.pnlLabelBorder.TabIndex = 44;
             this.pnlLabelBorder.Enter += new System.EventHandler(this.pnlLabelBorder_Enter);
             // 
             // rtxtLabel
             // 
-            this.rtxtLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.rtxtLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtxtLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtxtLabel.Location = new System.Drawing.Point(4, 4);
             this.rtxtLabel.Multiline = false;
             this.rtxtLabel.Name = "rtxtLabel";
             this.rtxtLabel.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.rtxtLabel.Size = new System.Drawing.Size(993, 15);
+            this.rtxtLabel.Size = new System.Drawing.Size(502, 15);
             this.rtxtLabel.TabIndex = 31;
             this.rtxtLabel.Text = "";
             this.rtxtLabel.WordWrap = false;
@@ -793,10 +790,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerRequest)).EndInit();
             this.splitContainerRequest.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fctbRequest)).EndInit();
+            this.contextMenuStripHeadersAndBodies.ResumeLayout(false);
             this.tcRequestBody.ResumeLayout(false);
             this.tpRequestText.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fctbRequestBody)).EndInit();
-            this.contextMenuStripHeadersAndBodies.ResumeLayout(false);
             this.tpRequestHex.ResumeLayout(false);
             this.tpRequestRender.ResumeLayout(false);
             this.tpRequestRender.PerformLayout();
