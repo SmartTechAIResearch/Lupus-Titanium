@@ -28,6 +28,8 @@ namespace Lupus_Titanium {
         private Control _container; //The container to add the scenario control. (Holds user action controls)
         private CaptureScenarioKVPControl _scenarioControl;
 
+        private System.Timers.Timer _requestsChangedTmr;
+
         private bool _inited;
         #endregion
 
@@ -209,10 +211,18 @@ namespace Lupus_Titanium {
                 userAction.RemoveRange(userActionRange);
             }
         }
-
         internal void InvokeRequestsChanged() {
-            lock (_lock)
-                if (OnRequestsChanged != null) OnRequestsChanged(this, null);
+            lock (_lock) {
+                if (_requestsChangedTmr != null) _requestsChangedTmr.Dispose();
+                _requestsChangedTmr = new System.Timers.Timer(500);
+                _requestsChangedTmr.Elapsed += _requestsChangedTmr_Elapsed;
+                _requestsChangedTmr.Start();
+            }                
+        }
+
+        private void _requestsChangedTmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
+            try { if (_requestsChangedTmr != null) _requestsChangedTmr.Stop(); } catch { }
+            if (OnRequestsChanged != null) OnRequestsChanged.Invoke(this, null);
         }
 
         public void StopCapturing() {

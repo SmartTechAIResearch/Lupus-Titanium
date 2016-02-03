@@ -20,6 +20,8 @@ namespace Lupus_Titanium {
         private string _label = string.Empty;
         private CaptureUserActionKVPControl _userActionControl;
 
+        private System.Timers.Timer _requestCountChangedTmr;
+
         public List<Request> Requests { get { lock (_lock) return _requests; } }
 
         public int Index {
@@ -77,7 +79,16 @@ namespace Lupus_Titanium {
         }
 
         internal void InvokeRequestCountChanged() {
-            if (OnRequestCountChanged != null) OnRequestCountChanged(this, null);
+            lock (_lock) {
+                if (_requestCountChangedTmr != null) _requestCountChangedTmr.Dispose();
+                _requestCountChangedTmr = new System.Timers.Timer(500);
+                _requestCountChangedTmr.Elapsed += _requestCountChangedTmr_Elapsed;
+                _requestCountChangedTmr.Start();
+            }
+        }
+        private void _requestCountChangedTmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
+            try { if (_requestCountChangedTmr != null) _requestCountChangedTmr.Stop(); } catch { }
+            if (OnRequestCountChanged != null) OnRequestCountChanged.Invoke(this, null);
         }
     }
 }

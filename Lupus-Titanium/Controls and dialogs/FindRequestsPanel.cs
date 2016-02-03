@@ -88,7 +88,8 @@ namespace Lupus_Titanium {
                     }, null);
                     _previousFind = _find;
 
-                } catch {
+                }
+                catch {
                     //Ignore.
                 }
         }
@@ -108,15 +109,25 @@ namespace Lupus_Titanium {
             if (count == 0) {
                 this.Height = 35;
                 btnFindNext.Enabled = false;
-            } else {                
-                if (selectNext && ++_selectedRow >= _foundRequests.Count) _selectedRow = 0;
-                
+            }
+            else {
+                if (selectNext && ++_selectedRow >= count) _selectedRow = 0;
+
                 if (_find != _previousFind)
                     dgvFindResults.RowCount = 0;
                 dgvFindResults.RowCount = count;
 
-                dgvFindResults.Rows[_selectedRow].Selected = true;
-                dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
+                try {
+                    dgvFindResults.Rows[_selectedRow].Selected = true;
+                    dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
+                }
+                catch (ArgumentOutOfRangeException aex) { //Try again.
+                    count = _foundRequests.Count;
+                    if (_selectedRow >= count) _selectedRow = 0;
+
+                    dgvFindResults.Rows[_selectedRow].Selected = true;
+                    dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
+                }
 
                 if (OnFindSelectionChanged != null)
                     OnFindSelectionChanged(this, new OnFindSelectionChangedEventArgs(_find, _foundRequests[_selectedRow]));
