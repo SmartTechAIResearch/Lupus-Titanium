@@ -81,6 +81,7 @@ namespace Lupus_Titanium {
                 ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((sender, certificate, chain, errors) => true);
 
                 _isStarted = ProxyServer.Start();
+
             }
         }
 

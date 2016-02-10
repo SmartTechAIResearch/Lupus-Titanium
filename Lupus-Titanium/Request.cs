@@ -52,8 +52,12 @@ namespace Lupus_Titanium {
         public int Result {
             get {
                 if (_result == -1 && HasResponse)
-                    _result = (int)_session.ResponseStatusCode;
-
+                    try {
+                        _result = (int)_session.ResponseStatusCode;
+                    }
+                    catch (NullReferenceException) {
+                        //Titanium bug.
+                    }
                 return _result;
             }
         }

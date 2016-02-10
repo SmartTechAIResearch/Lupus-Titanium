@@ -117,7 +117,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                     else
                         parentForm.HandleCreated += ParentForm_HandleCreated;
                 }
-            } catch {
+            }
+            catch {
             }
         }
         private void ParentForm_HandleCreated(object sender, EventArgs e) {
@@ -135,10 +136,15 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             _keepAtEnd = false;
             _selectedRow = _selectedColumn = 0;
             _extendedSelectedRows.Clear();
-            if (_requestRows.Count != 0) dgvRequests.FirstDisplayedScrollingRowIndex = 0;
-
             _clickedObject = e.ClickedObject;
             UpdateClickedObject();
+
+            if (dgvRequests.RowCount != 0)
+                try {
+                    dgvRequests.FirstDisplayedScrollingRowIndex = 0;
+                }
+                catch {
+                }
         }
 
         private void UpdateClickedObject() {
@@ -176,7 +182,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                 btnClearDelete.Text = "Clear";
                 btnGroupIntoUserAction.Enabled = userAction.Requests.Count != 0;
-            } else {
+            }
+            else {
                 rtxtLabel.Text = userAction.Label;
                 rtxtLabel.ReadOnly = false;
                 rtxtLabel.ForeColor = SystemColors.ControlText;
@@ -199,8 +206,6 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             lock (_lock) {
                 try {
                     if (_clickedObject == null) return;
-                    int requestsCount = _requestRows.Count;
-
                     _requests = _clickedObject is UserAction ? (_clickedObject as UserAction).Requests : _scenario.AllRequests;
 
                     dgvRequests.CellEnter -= dgvRequests_CellEnter;
@@ -211,6 +216,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                     _requestRows.Clear();
                     dgvRequests.RowCount = 0;
+
 
                     foreach (Request request in _requests) {
                         string result = request.Result == -1 ? "pending..." : request.Result + " " + ((System.Net.HttpStatusCode)request.Result);
@@ -224,6 +230,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                         _requestRows.Add(new object[] { request.RequestMethod, result, protocol, host, relativeUrl });
                     }
+
                     int count = _requestRows.Count;
                     dgvRequests.RowCount = count;
 
@@ -238,9 +245,9 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                             if (r != _selectedRow)
                                 dgvRequests.Rows[r].Selected = true;
 
-                    } else {
-                        _selectedRow = 0;
-                        _selectedRow = 0;
+                    }
+                    else {
+                        _selectedRow = _selectedColumn = 0;
                         _extendedSelectedRows.Clear();
                     }
 
@@ -248,7 +255,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                         Scroll -= dgvRequests_Scroll;
                         if (_keepAtEnd) {
                             dgvRequests.FirstDisplayedScrollingRowIndex = count - 1;
-                        } else {
+                        }
+                        else {
                             if (firstDisplayedScrollingRowIndex < count)
                                 dgvRequests.FirstDisplayedScrollingRowIndex = firstDisplayedScrollingRowIndex;
                         }
@@ -257,8 +265,10 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                     FillViews();
 
                     dgvRequests.CellEnter += dgvRequests_CellEnter;
-                } catch {
-                    //Disposing.
+                }
+                catch (Exception ex) {
+                    //Most likely because of disposing.
+                    Debug.WriteLine(ex.ToString());
                 }
             }
         }
@@ -274,12 +284,14 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             if (_clickedObject == _scenario) {
                 if (MessageBox.Show("Are you sure you want to clear all requests?", string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes)
                     _scenario.Clear();
-            } else {
+            }
+            else {
                 var ua = _clickedObject as UserAction;
                 if (ua.Label.Length == 0) {
                     if (MessageBox.Show("Are you sure you want to clear these requests?", string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes)
                         ua.Clear();
-                } else if (MessageBox.Show("Are you sure you want to delete this user action?", string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes) {
+                }
+                else if (MessageBox.Show("Are you sure you want to delete this user action?", string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes) {
                     _scenario.Delete(ua);
                 }
             }
@@ -292,7 +304,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                     if (e.ColumnIndex < row.Length)
                         e.Value = row[e.ColumnIndex];
                 }
-            } catch {
+            }
+            catch {
                 //Row not available anymore.
             }
         }
@@ -322,7 +335,6 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             }
 
             FillViews();
-
         }
 
 
@@ -360,7 +372,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                     if (request.RequestBody == null || request.RequestBody.LongLength == 0L) {
                         splitContainerRequest.Panel2Collapsed = true;
                         browserRequest.Render(string.Empty);
-                    } else {
+                    }
+                    else {
                         splitContainerRequest.Panel2Collapsed = false;
 
                         TextualContentFormatter.Format(fctbRequestBody, request.RequestBodyUtf8, request.RequestContentType);
@@ -370,12 +383,14 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                             browserRequest.Visible = false;
                             picRequest.Visible = true;
                             picRequest.Image = Image.FromStream(new MemoryStream(request.RequestBody));
-                        } else if (request.RequestBodyUtf8.Contains("</svg>")) {
+                        }
+                        else if (request.RequestBodyUtf8.Contains("</svg>")) {
                             browserRequest.Visible = false;
                             picRequest.Visible = true;
                             var svg = Svg.SvgDocument.FromSvg<Svg.SvgDocument>(request.RequestBodyUtf8);
                             picRequest.Image = svg.Draw();
-                        } else {
+                        }
+                        else {
                             browserRequest.Visible = true;
                             picRequest.Visible = false;
                             browserRequest.Render(request.RequestBodyUtf8);
@@ -400,7 +415,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                             if (request.ResponseBody == null || request.ResponseBody.LongLength == 0L) {
                                 splitContainerResponse.Panel2Collapsed = true;
                                 browserResponse.Render(string.Empty);
-                            } else {
+                            }
+                            else {
                                 splitContainerResponse.Panel2Collapsed = false;
 
                                 TextualContentFormatter.Format(fctbResponseBody, request.ResponseBodyUtf8, request.ResponseContentType);
@@ -411,12 +427,14 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                                     browserResponse.Visible = false;
                                     picResponse.Visible = true;
                                     picResponse.Image = Image.FromStream(new MemoryStream(request.ResponseBody));
-                                } else if (request.ResponseBodyUtf8.Contains("</svg>")) {
+                                }
+                                else if (request.ResponseBodyUtf8.Contains("</svg>")) {
                                     browserResponse.Visible = false;
                                     picResponse.Visible = true;
                                     var svg = Svg.SvgDocument.FromSvg<Svg.SvgDocument>(request.ResponseBodyUtf8);
                                     picResponse.Image = svg.Draw();
-                                } else {
+                                }
+                                else {
                                     browserResponse.Visible = true;
                                     picResponse.Visible = false;
                                     browserResponse.Render(request.ResponseBodyUtf8);
@@ -424,13 +442,15 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                             }
 
                         }
-                    } else {
+                    }
+                    else {
                         splitContainerResponse.Panel2Collapsed = true;
                         TextualContentFormatter.Format(fctbResponse, string.Empty);
                         browserResponse.Render(string.Empty);
                     }
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 Debug.WriteLine("FillViews " + ex);
             }
         }
@@ -482,7 +502,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                 tsmDeleteRequests.Text = "Delete";
                 tsmDeleteRequests.Enabled = true;
-            } else {
+            }
+            else {
                 tsmDeleteRequests.Text = "Deleting selections not possible from 'All' and 'Ungrouped' requests while capturing";
                 tsmDeleteRequests.Enabled = false;
             }
@@ -490,7 +511,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
         private bool CanDeleteRequests() {
             if (_clickedObject == _scenario) {
                 if (_scenario.IsCapturing) return false;
-            } else {
+            }
+            else {
                 var userAction = _clickedObject as UserAction;
                 if (_scenario.IsCapturing && userAction.Label.Length == 0) return false;
             }
@@ -503,7 +525,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                 _selectedRow = _selectedColumn = 0;
                 if (_clickedObject == _scenario) {
                     _scenario.RemoveRange(range);
-                } else {
+                }
+                else {
                     var userAction = _clickedObject as UserAction;
                     userAction.RemoveRange(range);
                 }
@@ -517,7 +540,8 @@ namespace Lupus_Titanium.Controls_and_dialogs {
         private void tsmCopyRequests_Click(object sender, EventArgs e) {
             if (_extendedSelectedRows.Count == 1) {
                 Clipboard.SetText(_requestRows[_selectedRow][_selectedColumn].ToString());
-            } else {
+            }
+            else {
                 var sb = new StringBuilder();
 
                 foreach (int r in _extendedSelectedRows) {
