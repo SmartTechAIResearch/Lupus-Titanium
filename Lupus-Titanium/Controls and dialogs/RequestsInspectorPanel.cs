@@ -136,10 +136,15 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             _keepAtEnd = false;
             _selectedRow = _selectedColumn = 0;
             _extendedSelectedRows.Clear();
-            if (_requestRows.Count != 0) dgvRequests.FirstDisplayedScrollingRowIndex = 0;
-
             _clickedObject = e.ClickedObject;
             UpdateClickedObject();
+
+            if (dgvRequests.RowCount != 0)
+                try {
+                    dgvRequests.FirstDisplayedScrollingRowIndex = 0;
+                }
+                catch {
+                }
         }
 
         private void UpdateClickedObject() {
@@ -201,8 +206,6 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             lock (_lock) {
                 try {
                     if (_clickedObject == null) return;
-                    int requestsCount = _requestRows.Count;
-
                     _requests = _clickedObject is UserAction ? (_clickedObject as UserAction).Requests : _scenario.AllRequests;
 
                     dgvRequests.CellEnter -= dgvRequests_CellEnter;
@@ -213,6 +216,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                     _requestRows.Clear();
                     dgvRequests.RowCount = 0;
+
 
                     foreach (Request request in _requests) {
                         string result = request.Result == -1 ? "pending..." : request.Result + " " + ((System.Net.HttpStatusCode)request.Result);
@@ -226,6 +230,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                         _requestRows.Add(new object[] { request.RequestMethod, result, protocol, host, relativeUrl });
                     }
+
                     int count = _requestRows.Count;
                     dgvRequests.RowCount = count;
 
@@ -261,8 +266,9 @@ namespace Lupus_Titanium.Controls_and_dialogs {
 
                     dgvRequests.CellEnter += dgvRequests_CellEnter;
                 }
-                catch {
-                    //Disposing.
+                catch (Exception ex) {
+                    //Most likely because of disposing.
+                    Debug.WriteLine(ex.ToString());
                 }
             }
         }
