@@ -164,16 +164,17 @@ namespace Lupus_Titanium {
                 btnStartStop.Text = "Stop capturing";
 
                 _scenario.StartCapturing(UseFilter ? Filter : null);
+                SaveProperties();
 
                 btnPauseContinue.Text = "Pause";
                 btnPauseContinue.Visible = true;
                 filterRequestsPanel.Enabled = false;
 
-                if (StartClicked != null) StartClicked(this, null);
+                StartClicked?.Invoke(this, null);
             } else {
                 _scenario.StopCapturing();
 
-                if (StopClicked != null) StopClicked(this, null);
+                StopClicked?.Invoke(this, null);
 
                 btnStartStop.Text = "Capture requests";
 
@@ -203,6 +204,7 @@ namespace Lupus_Titanium {
 
         private void tbUseFilter_CheckedChanged(object sender, EventArgs e) {
             VisualizeFilter();
+            SaveProperties();
         }
 
         private void btnTutorial_Click(object sender, EventArgs e) {
@@ -237,9 +239,13 @@ namespace Lupus_Titanium {
         }
 
         private void ParentForm_FormClosing(object sender, FormClosingEventArgs e) {
-            if (_scenario != null) _scenario.StopCapturing();
-            _scenario = null;
             SaveProperties();
+            if (_scenario != null) {
+                _scenario.StopCapturing();
+                StopClicked?.Invoke(this, null);
+
+                _scenario = null;
+            }
         }
 
         #endregion
