@@ -170,11 +170,11 @@ namespace Lupus_Titanium {
                 btnPauseContinue.Visible = true;
                 filterRequestsPanel.Enabled = false;
 
-                StartClicked?.Invoke(this, null);
+                if(StartClicked != null) StartClicked.Invoke(this, null);
             } else {
                 _scenario.StopCapturing();
 
-                StopClicked?.Invoke(this, null);
+                if(StopClicked != null) StopClicked.Invoke(this, null);
 
                 btnStartStop.Text = "Capture requests";
 
@@ -242,7 +242,7 @@ namespace Lupus_Titanium {
             SaveProperties();
             if (_scenario != null) {
                 _scenario.StopCapturing();
-                StopClicked?.Invoke(this, null);
+                if(StopClicked != null) StopClicked.Invoke(this, null);
 
                 _scenario = null;
             }
