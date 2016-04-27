@@ -34,7 +34,7 @@ namespace Lupus_Titanium_GUI {
             string flat = captureControl.GetScenarioFlat();
             if (!string.IsNullOrEmpty(flat))
                 if (string.IsNullOrEmpty(_handle)) {
-                    if (saveFileDialog.ShowDialog() == DialogResult.Yes) 
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK) 
                         using (var sw = new StreamWriter(saveFileDialog.FileName, false)) {
                             sw.Write(flat);
                             sw.Flush();

@@ -202,7 +202,8 @@ namespace Lupus_Titanium {
             if (method == "PUT" || method == "POST")
                 try {
                     RequestBody = session.GetRequestBody();
-                } catch {
+                }
+                catch {
                     ResponseBody = Encoding.UTF8.GetBytes("Failed to get the request body. Connection closed?");
                 }
         }
@@ -280,7 +281,8 @@ namespace Lupus_Titanium {
                 _protocol = "http";
                 if (url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)) {
                     url = url.Substring(7);
-                } else if (url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)) {
+                }
+                else if (url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)) {
                     url = url.Substring(8);
                     _protocol = "https";
                 }
@@ -344,7 +346,7 @@ namespace Lupus_Titanium {
         /// <returns> 
         /// <para>Request method<![CDATA[<16 0C 02 12 $>]]>Protocol<![CDATA[<16 0C 02 12 $>]]>Destination host<![CDATA[<16 0C 02 12 $>]]>Destination port<![CDATA[<16 0C 02 12 $>]]>Relative url<![CDATA[<16 0C 02 12 $>]]></para> 
         /// <para> Get data (&-delimited KVPs)<![CDATA[<16 0C 02 12 $>]]>Post data (UTF8)<![CDATA[<16 0C 02 12 $>]]>Post data (bytes as hex)<![CDATA[<16 0C 02 12 $>]]>Content type<![CDATA[<16 0C 02 12 $>]]>Accept</para> 
-        /// <para><![CDATA[<16 0C 02 12 $>]]>Offset<![CDATA[<16 0C 02 12 $>]]>Redirects<![CDATA[<16 0C 02 12 $>]]>Custom headers</para> 
+        /// <para><![CDATA[<16 0C 02 12 $>]]>Offset<![CDATA[<16 0C 02 12 $>]]>Redirects<![CDATA[<16 0C 02 12 $>]]>Request headers</para> 
         /// </returns>
         public string ConvertToFlat(string delimiter = "<16 0C 02 12$>", string newLine = "<16 0C 02 12n>", string carriageReturn = "<16 0C 02 12r>") {
             var sb = new StringBuilder();
@@ -388,8 +390,16 @@ namespace Lupus_Titanium {
             //To correctly parallize
             sb.Append(Result > 299 && Result < 400);
 
-            //Headers are not exported, only the placeholder is.
             sb.Append(delimiter);
+            if (_requestHeaders.Length != 0) {
+                KeyValuePair<string, string> kvp;
+                for (int i = 0; i != _requestHeaders.Length - 1; i++) {
+                    kvp = _requestHeaders[i];
+                    sb.AppendFormat("{0}: {1}<16 0C 02 13$>", kvp.Key, kvp.Value);
+                }
+                kvp = _requestHeaders.Last();
+                sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value);
+            }
 
             return sb.ToString();
 
