@@ -157,7 +157,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                 UpdateClickedObject(_clickedObject as UserAction);
             rtxtLabel.TextChanged += rtxtLabel_TextChanged;
 
-            FillRequests();
+           FillRequests();
         }
 
         private void UpdateClickedObject(Scenario scenario) {
@@ -262,6 +262,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                         }
                         Scroll += dgvRequests_Scroll;
                     }
+
                     FillViews();
 
                     dgvRequests.CellEnter += dgvRequests_CellEnter;
@@ -333,7 +334,6 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                 if (!_extendedSelectedRows.Contains(r))
                     _extendedSelectedRows.Add(r);
             }
-
             FillViews();
         }
 
