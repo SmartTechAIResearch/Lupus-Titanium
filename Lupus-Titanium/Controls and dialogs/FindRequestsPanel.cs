@@ -121,7 +121,7 @@ namespace Lupus_Titanium {
                     dgvFindResults.Rows[_selectedRow].Selected = true;
                     dgvFindResults.FirstDisplayedScrollingRowIndex = _selectedRow;
                 }
-                catch (ArgumentOutOfRangeException aex) { //Try again.
+                catch (ArgumentOutOfRangeException) { //Try again.
                     count = _foundRequests.Count;
                     if (_selectedRow >= count) _selectedRow = 0;
 
