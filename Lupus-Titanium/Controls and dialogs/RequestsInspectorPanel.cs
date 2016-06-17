@@ -157,7 +157,7 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                 UpdateClickedObject(_clickedObject as UserAction);
             rtxtLabel.TextChanged += rtxtLabel_TextChanged;
 
-           FillRequests();
+            FillRequests();
         }
 
         private void UpdateClickedObject(Scenario scenario) {
@@ -251,7 +251,10 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                         _extendedSelectedRows.Clear();
                     }
 
-                    if (count != 0) {
+                    if (count == 0) {
+                        ClearViews();
+                    }
+                    else {
                         Scroll -= dgvRequests_Scroll;
                         if (_keepAtEnd) {
                             dgvRequests.FirstDisplayedScrollingRowIndex = count - 1;
@@ -261,10 +264,10 @@ namespace Lupus_Titanium.Controls_and_dialogs {
                                 dgvRequests.FirstDisplayedScrollingRowIndex = firstDisplayedScrollingRowIndex;
                         }
                         Scroll += dgvRequests_Scroll;
+
+                        FillViews();
                     }
-
-                    FillViews();
-
+                    
                     dgvRequests.CellEnter += dgvRequests_CellEnter;
                 }
                 catch (Exception ex) {
@@ -453,6 +456,14 @@ namespace Lupus_Titanium.Controls_and_dialogs {
             catch (Exception ex) {
                 Debug.WriteLine("FillViews " + ex);
             }
+        }
+
+        private void ClearViews() {
+            fctbRequest.Clear();
+            fctbRequestBody.Clear();
+            fctbResponse.Clear();
+            fctbResponseBody.Clear();
+            splitContainerRequest.Panel2Collapsed = splitContainerResponse.Panel2Collapsed = true;
         }
 
         private void tsmFind_Click(object sender, EventArgs e) {
