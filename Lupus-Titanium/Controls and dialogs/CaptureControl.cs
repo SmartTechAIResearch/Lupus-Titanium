@@ -23,10 +23,10 @@ namespace Lupus_Titanium {
     /// </summary>
     public partial class CaptureControl : UserControl {
         public event EventHandler StartClicked, StopClicked;
-
-        private ManualResetEvent _initWaitHandle = new ManualResetEvent(false);
-
+        public event EventHandler<Scenario.OnUngroupedRequestsChangedEventArgs> OnUngroupedRequestsChanged;
+        
         #region Fields
+        private ManualResetEvent _initWaitHandle = new ManualResetEvent(false);
         private Scenario _scenario;
         private string[] _defaultFilter = { "addthis.com", "cloudflare.com", "facebook.com", "google.com", "google-analytics.com", "googleapis.com", "linkedin.com",
             "m.addthisedge.com", "microsoft.com", "nedstatbasic.net", "gstatic.com", "localhost", "twimg.com", "twitter.com", "youtube.com" };
@@ -114,6 +114,7 @@ namespace Lupus_Titanium {
             requestsInspectorPanel.Scenario = _scenario;
             _scenario.Init(flpScenario);
             _scenario.OnRequestsChanged += _scenario_OnRequestsChanged;
+            _scenario.OnUngroupedRequestsChanged += _scenario_OnUngroupedRequestsChanged;
             findRequestsPanel.Scenario = _scenario;
             findRequestsPanel.OnFindSelectionChanged += FindRequestsPanel_OnFindSelectionChanged;
         }
@@ -121,6 +122,11 @@ namespace Lupus_Titanium {
         private void _scenario_OnRequestsChanged(object sender, EventArgs e) {
             SynchronizationContextWrapper.SynchronizationContext.Send((state) => {
                 tbFind.Visible = _scenario.AllRequests.Count != 0;
+            }, null);
+        }
+        private void _scenario_OnUngroupedRequestsChanged(object sender, Scenario.OnUngroupedRequestsChangedEventArgs e) {
+            SynchronizationContextWrapper.SynchronizationContext.Send((state) => {
+                if (OnUngroupedRequestsChanged != null) OnUngroupedRequestsChanged.Invoke(this, e);
             }, null);
         }
 

@@ -15,6 +15,7 @@ namespace Lupus_Titanium {
 
         #region Events
         internal event EventHandler OnRequestsChanged;
+        internal event EventHandler<OnUngroupedRequestsChangedEventArgs> OnUngroupedRequestsChanged;
         public event EventHandler<OnClickEventArgs> OnClick;
         #endregion
 
@@ -223,6 +224,7 @@ namespace Lupus_Titanium {
         private void _requestsChangedTmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
             try { if (_requestsChangedTmr != null) _requestsChangedTmr.Stop(); } catch { }
             if (OnRequestsChanged != null) OnRequestsChanged.Invoke(this, null);
+            if (OnUngroupedRequestsChanged != null) OnUngroupedRequestsChanged.Invoke(this, new OnUngroupedRequestsChangedEventArgs(_ungroupedRequests.Requests.Count));
         }
 
         public void StopCapturing() {
@@ -287,6 +289,13 @@ namespace Lupus_Titanium {
             public object ClickedObject { get; private set; }
             public OnClickEventArgs(object clickedObject) {
                 ClickedObject = clickedObject;
+            }
+        }
+
+        public class OnUngroupedRequestsChangedEventArgs : EventArgs {
+            public int UngroupedRequests { get; private set; }
+            public OnUngroupedRequestsChangedEventArgs(int ungroupedRequests) {
+                UngroupedRequests = ungroupedRequests;
             }
         }
     }

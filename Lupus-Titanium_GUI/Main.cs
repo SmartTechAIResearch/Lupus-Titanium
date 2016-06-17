@@ -21,13 +21,19 @@ namespace Lupus_Titanium_GUI {
         /// </param>
         public Main(string[] args) {
             InitializeComponent();
-
+            captureControl.OnUngroupedRequestsChanged += CaptureControl_OnUngroupedRequestsChanged; 
             if (args.Length != 0) {
                 if (args[0].StartsWith("ipc"))
                     _handle = args[0];
                 if (args.Contains("autocapture"))
                     captureControl.StartStopCapturing();
             }
+        }
+
+        private void CaptureControl_OnUngroupedRequestsChanged(object sender, Lupus_Titanium.Scenario.OnUngroupedRequestsChangedEventArgs e) {
+            string title = "Lupus-Titanium HTTP(s) proxy";
+            if (e.UngroupedRequests != 0) title = "* " + title;
+            this.Text = title;
         }
 
         private void captureControl_StopClicked(object sender, EventArgs e) {
