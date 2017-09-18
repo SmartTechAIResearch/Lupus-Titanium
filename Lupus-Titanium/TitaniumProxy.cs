@@ -6,11 +6,15 @@
  *    Dieter Vandroemme
  */
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Security;
+using System.Threading.Tasks;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
+using Titanium.Web.Proxy.Helpers;
+using Titanium.Web.Proxy.Models;
 
 namespace Lupus_Titanium {
     public class TitaniumProxy {
@@ -28,7 +32,11 @@ namespace Lupus_Titanium {
         private bool _isStarted, _isCapturingPaused;
         private HashSet<string> _filter;
 
-        private HashSet<Request> _requests = new HashSet<Request>(); //Workaround fiesta.
+        private ConcurrentBag<Request> _requests = new ConcurrentBag<Request>(); //Workaround fiesta.
+
+        private ProxyServer _proxyServer;
+
+        private ExplicitProxyEndPoint _explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8000, true);
         #endregion
 
         #region Properties
@@ -42,17 +50,26 @@ namespace Lupus_Titanium {
                     _isCapturingPaused = value;
 
                     if (_isCapturingPaused) {
-                        ProxyServer.BeforeRequest -= ProxyServer_BeforeRequest;
-                        ProxyServer.BeforeResponse -= ProxyServer_BeforeResponse;
-                    } else {
-                        ProxyServer.BeforeRequest += ProxyServer_BeforeRequest;
-                        ProxyServer.BeforeResponse += ProxyServer_BeforeResponse;
+                        _proxyServer.BeforeRequest -= ProxyServer_BeforeRequest;
+                        _proxyServer.BeforeResponse -= ProxyServer_BeforeResponse;
+                    }
+                    else {
+                        _proxyServer.BeforeRequest += ProxyServer_BeforeRequest;
+                        _proxyServer.BeforeResponse += ProxyServer_BeforeResponse;
                     }
                 }
             }
         }
         #endregion
 
+        public TitaniumProxy() {
+            _proxyServer = new ProxyServer();
+            _proxyServer.ExceptionFunc = exception => Console.WriteLine(exception.Message);
+            _proxyServer.TrustRootCertificate = true;
+            _proxyServer.ForwardToUpstreamGateway = true;
+
+            _proxyServer.AddEndPoint(_explicitEndPoint);
+        }
         ~TitaniumProxy() { StopCapturing(); }
 
         #region Functions
@@ -65,47 +82,50 @@ namespace Lupus_Titanium {
                 //To be safe.
                 StopCapturing();
 
-                _requests = new HashSet<Request>();
+                _requests = new ConcurrentBag<Request>();
 
                 ProxyHelper.ClearProxyCache();
 
                 _filter = filter == null || filter.Length == 0 ? null : new HashSet<string>(filter);
 
-                ProxyServer.BeforeRequest += ProxyServer_BeforeRequest;
-                ProxyServer.BeforeResponse += ProxyServer_BeforeResponse;
-
-                ProxyServer.EnableSsl = true;
-                ProxyServer.SetAsSystemProxy = true;
+                _proxyServer.BeforeRequest += ProxyServer_BeforeRequest;
+                _proxyServer.BeforeResponse += ProxyServer_BeforeResponse;
 
                 //Could be dangerous to accept all server certificates. We do it anyway, we want to capture everything.
                 ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((sender, certificate, chain, errors) => true);
 
-                _isStarted = ProxyServer.Start();
+                _proxyServer.Start();
+                _proxyServer.SetAsSystemProxy(_explicitEndPoint, ProxyProtocolType.AllHttp);
 
+                _isStarted = true;
             }
         }
 
-        private void ProxyServer_BeforeRequest(object sender, SessionEventArgs session) {
-            lock (_lock)
-                if (CanCapture(session, _filter)) {
-                    var request = new Request(session);
-                    _requests.Add(request);
-                    if (BeforeRequest != null)
-                        BeforeRequest(this, new OnRequestEventArgs(request));
-                }
+
+        private async Task ProxyServer_BeforeRequest(object sender, SessionEventArgs session) {
+            if (CanCapture(session, _filter)) {
+                byte[] bodyBytes = new byte[0];
+
+                if (session.WebSession.Request.HasBody)
+                    bodyBytes = await session.GetRequestBody();
+
+                var request = new Request(session, bodyBytes);
+                _requests.Add(request);
+                if (BeforeRequest != null)
+                    BeforeRequest(this, new OnRequestEventArgs(request));
+            }
         }
 
-        private void ProxyServer_BeforeResponse(object sender, SessionEventArgs session) {
-            lock (_lock)
-                if (CanCapture(session, _filter)) {
-                    foreach (Request request in _requests)
-                        if (request.EqualsSession(session)) {
-                            request.SetResponse();
-                            if (BeforeResponse != null)
-                                BeforeResponse(this, new OnRequestEventArgs(request));
-                            break;
-                        }
-                }
+        private async Task ProxyServer_BeforeResponse(object sender, SessionEventArgs session) {
+            if (CanCapture(session, _filter)) {
+                foreach (Request request in _requests)
+                    if (request.EqualsSession(session)) {
+                        await request.SetResponse(session);
+                        if (BeforeResponse != null)
+                            BeforeResponse(this, new OnRequestEventArgs(request));
+                        break;
+                    }
+            }
         }
 
 
@@ -116,12 +136,13 @@ namespace Lupus_Titanium {
             if (_isStarted)
                 for (int i = 0; i != 3; i++) //Try 3 times.
                     try {
-                        ProxyServer.BeforeRequest -= ProxyServer_BeforeRequest;
-                        ProxyServer.BeforeResponse -= ProxyServer_BeforeResponse;
+                        _proxyServer.BeforeRequest -= ProxyServer_BeforeRequest;
+                        _proxyServer.BeforeResponse -= ProxyServer_BeforeResponse;
 
-                        ProxyServer.Stop();
+                        _proxyServer.Stop();
                         break;
-                    } catch {
+                    }
+                    catch {
                         // Should not happen. Don't care much if it does.
                     }
             _isStarted = false;
@@ -132,7 +153,8 @@ namespace Lupus_Titanium {
                 try {
                     ProxyHelper.UnsetProxy();
                     break;
-                } catch {
+                }
+                catch {
                     // Should not happen. Don't care much if it does.
                 }
 
@@ -144,14 +166,16 @@ namespace Lupus_Titanium {
         /// </summary>
         /// <param name="session"></param>
         private bool CanCapture(SessionEventArgs session, HashSet<string> filter) {
-            if (!_isStarted  || session == null || string.IsNullOrEmpty(session.RequestUrl) || session.RequestHeaders == null) return false;
-            if (filter != null) {
-                string destinationHost = session.RequestHostname.ToLowerInvariant();
-                foreach (string ipOrHostnamePart in filter)
-                    if (destinationHost.Contains(ipOrHostnamePart))
-                        return false;
+            lock (_lock) {
+                if (!_isStarted || session == null || string.IsNullOrEmpty(session.WebSession.Request.Url) || session.WebSession.Request.RequestHeaders == null) return false;
+                if (filter != null) {
+                    string destinationHost = session.WebSession.Request.Host.ToLowerInvariant();
+                    foreach (string ipOrHostnamePart in filter)
+                        if (destinationHost.Contains(ipOrHostnamePart))
+                            return false;
+                }
+                return true;
             }
-            return true;
         }
         #endregion
 
