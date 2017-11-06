@@ -5,127 +5,155 @@
  * Author(s):
  *    Dieter Vandroemme
  */
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Titanium.Web.Proxy.EventArguments;
-using Titanium.Web.Proxy.Models;
-using System.Linq;
-using Newtonsoft.Json;
+using Titanium.Web.Proxy.Http;
 
-namespace Lupus_Titanium {
-    public class Request {
+namespace Lupus_Titanium
+{
+    public class Request
+    {
 
         #region Fields
-        private SessionEventArgs _session;
+        private Titanium.Web.Proxy.Http.Request _request;
+        private Titanium.Web.Proxy.Http.Response _response;
 
         private int _parentUserActionIndex = -1, _result = -1, _destinationPort = -1;
         private string _parentUserActionLabel, _requestMethod, _protocol, _destinationHost, _relativeUrl, _getData,
-            _requestBodyUtf8, _requestBodyHex, _responseContentType, _accept, _referer,
+            _requestBodyUtf8, _requestBodyHex, _accept, _referer,
             _httpVersion, _requestContentType, _responseBodyUtf8, _responseBodyHex;
-        private KeyValuePair<string, string>[] _requestHeaders, _responseHeaders;
         #endregion
 
         #region Properties
-        public int ParentUserActionIndex {
-            get {
+
+        public Guid RequestId { get; private set; }
+
+        public int ParentUserActionIndex
+        {
+            get
+            {
                 if (ParentUserAction != null) _parentUserActionIndex = ParentUserAction.Index;
                 return _parentUserActionIndex;
             }
         }
 
-        public string ParentUserActionLabel {
-            get {
+        public string ParentUserActionLabel
+        {
+            get
+            {
                 if (ParentUserAction != null) _parentUserActionLabel = ParentUserAction.Label;
                 return _parentUserActionLabel;
             }
         }
 
-        public string RequestMethod {
-            get {
-                return _requestMethod ?? (_requestMethod = _session.RequestMethod.ToUpperInvariant());
+        public string RequestMethod
+        {
+            get
+            {
+                return _requestMethod ?? (_requestMethod = _request.Method.ToUpperInvariant());
             }
         }
 
-        public int Result {
-            get {
+        public int Result
+        {
+            get
+            {
                 if (_result == -1 && HasResponse)
-                    try {
-                        _result = (int)_session.ResponseStatusCode;
+                    try
+                    {
+                        _result = (int)_response.ResponseStatusCode;
                     }
-                    catch (NullReferenceException) {
+                    catch (NullReferenceException)
+                    {
                         //Titanium bug.
                     }
                 return _result;
             }
         }
 
-        public string Protocol {
-            get {
-                DetermineUrlParts();
+        public string Protocol
+        {
+            get
+            {
                 return _protocol;
             }
         }
 
-        public string DestinationHost {
-            get {
-                DetermineUrlParts();
+        public string DestinationHost
+        {
+            get
+            {
                 return _destinationHost;
             }
         }
 
-        public int DestinationPort {
-            get {
-                DetermineUrlParts();
+        public int DestinationPort
+        {
+            get
+            {
                 return _destinationPort;
             }
         }
 
-        public string RelativeUrl {
-            get {
-                DetermineUrlParts();
+        public string RelativeUrl
+        {
+            get
+            {
                 return _relativeUrl;
             }
         }
 
-        public string GetData {
-            get {
-                DetermineUrlParts();
+        public string GetData
+        {
+            get
+            {
                 return _getData;
             }
         }
 
-        public KeyValuePair<string, string>[] RequestHeaders {
-            get { return _requestHeaders ?? (_requestHeaders = (_session.RequestHeaders == null ? null : ConvertHttpHeaders(_session.RequestHeaders))); }
+        public KeyValuePair<string, string>[] RequestHeaders
+        {
+            get; private set;
         }
 
-        public string RequestBodyUtf8 {
+        public string RequestBodyUtf8
+        {
             get { return _requestBodyUtf8 ?? (_requestBodyUtf8 = (RequestBody == null ? string.Empty : Encoding.UTF8.GetString(RequestBody))); }
         }
 
-        public string RequestBodyHex {
-            get {
+        public string RequestBodyHex
+        {
+            get
+            {
                 return _requestBodyHex ?? (_requestBodyHex = (RequestBody == null ? string.Empty : BytesToHex(RequestBody)));
             }
         }
 
-        public KeyValuePair<string, string>[] ResponseHeaders {
-            get { return _responseHeaders ?? (_responseHeaders = (HasResponse ? ConvertHttpHeaders(_session.ResponseHeaders) : null)); }
+        public KeyValuePair<string, string>[] ResponseHeaders
+        {
+            get; private set;
         }
 
-        public string ResponseContentType {
-            get {
-                return _responseContentType ?? (_responseContentType = HasResponse ? _session.ResponseContentType : null);
-            }
+        public string ResponseContentType
+        {
+            get; private set;
         }
 
-        public string Accept {
-            get {
+        public string Accept
+        {
+            get
+            {
                 if (_accept == null)
                     foreach (var header in RequestHeaders)
-                        if (header.Key.ToLowerInvariant() == "accept") {
+                        if (header.Key.ToLowerInvariant() == "accept")
+                        {
                             _accept = header.Value;
                             break;
                         }
@@ -133,11 +161,14 @@ namespace Lupus_Titanium {
             }
         }
 
-        public string Referer {
-            get {
+        public string Referer
+        {
+            get
+            {
                 if (_referer == null)
                     foreach (var header in RequestHeaders)
-                        if (header.Key.ToLowerInvariant() == "referer") {
+                        if (header.Key.ToLowerInvariant() == "referer")
+                        {
                             _referer = header.Value;
                             break;
                         }
@@ -145,11 +176,13 @@ namespace Lupus_Titanium {
             }
         }
 
-        public string HttpVersion {
-            get {
-                if (_httpVersion == null) {
-                    var v = _session.GetType().GetProperty("RequestHttpVersion", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_session) as Version;
-                    _httpVersion = string.Format("{0}.{1}", v.Major, v.Minor);
+        public string HttpVersion
+        {
+            get
+            {
+                if (_httpVersion == null)
+                {
+                    _httpVersion = string.Format("{0}.{1}", _request.HttpVersion.Major, _request.HttpVersion.Minor);
                 }
                 return _httpVersion;
             }
@@ -160,11 +193,14 @@ namespace Lupus_Titanium {
         /// </summary>
         public byte[] RequestBody { get; private set; }
 
-        public string RequestContentType {
-            get {
+        public string RequestContentType
+        {
+            get
+            {
                 if (_requestContentType == null)
                     foreach (var header in RequestHeaders)
-                        if (header.Key.Equals("content-type", StringComparison.InvariantCultureIgnoreCase)) {
+                        if (header.Key.Equals("content-type", StringComparison.InvariantCultureIgnoreCase))
+                        {
                             _requestContentType = header.Value;
                             break;
                         }
@@ -175,17 +211,21 @@ namespace Lupus_Titanium {
 
         public byte[] ResponseBody { get; private set; }
 
-        public string ResponseBodyUtf8 {
+        public string ResponseBodyUtf8
+        {
             get { return _responseBodyUtf8 ?? (_responseBodyUtf8 = (ResponseBody == null ? string.Empty : Encoding.UTF8.GetString(ResponseBody))); }
         }
 
-        public string ResponseBodyHex {
-            get {
+        public string ResponseBodyHex
+        {
+            get
+            {
                 return _responseBodyHex ?? (_responseBodyHex = (ResponseBody == null ? string.Empty : BytesToHex(ResponseBody)));
             }
         }
 
-        public bool HasResponse {
+        public bool HasResponse
+        {
             get { return ResponseBody != null; }
         }
 
@@ -196,22 +236,23 @@ namespace Lupus_Titanium {
         /// 
         /// </summary>
         /// <param name="session"></param>
-        public Request(SessionEventArgs session) {
-            _session = session;
-            string method = session.RequestMethod.ToUpperInvariant();
-            if (method == "PUT" || method == "POST")
-                try {
-                    RequestBody = session.GetRequestBody();
-                }
-                catch {
-                    ResponseBody = Encoding.UTF8.GetBytes("Failed to get the request body. Connection closed?");
-                }
+        public Request(SessionEventArgs session, byte[] bodyBytes)
+        {
+            RequestId = session.WebSession.RequestId;
+            DetermineUrlParts(session);
+            _request = session.WebSession.Request;
+            _response = session.WebSession.Response;
+
+            RequestHeaders = _request.RequestHeaders == null ? null : ConvertHttpHeaders(_request.RequestHeaders);
+            RequestBody = bodyBytes;
+
         }
         /// <summary>
         /// Make a new request out of a given json string. Such a string would be created using ConvertToJson().
         /// </summary>
         /// <param name="json"></param>
-        public Request(string json) {
+        public Request(string json)
+        {
             dynamic jObject = JObject.Parse(json);
             _parentUserActionIndex = jObject.parentUserActionIndex;
             _parentUserActionLabel = jObject.parentUserActionLabel;
@@ -224,11 +265,11 @@ namespace Lupus_Titanium {
             _relativeUrl = jObject.relativeUrl;
             _getData = jObject.getData;
             if (jObject.requestHeaders != null)
-                _requestHeaders = ((JArray)jObject.requestHeaders).Select(token => JsonConvert.DeserializeObject<KeyValuePair<string, string>>(token.ToString())).ToArray();
+                RequestHeaders = ((JArray)jObject.requestHeaders).Select(token => JsonConvert.DeserializeObject<KeyValuePair<string, string>>(token.ToString())).ToArray();
             RequestBody = jObject.requestBody;
             if (jObject.responseHeaders != null)
-                _responseHeaders = ((JArray)jObject.responseHeaders).Select(token => JsonConvert.DeserializeObject<KeyValuePair<string, string>>(token.ToString())).ToArray();
-            _responseContentType = jObject.responseContentType;
+                ResponseHeaders = ((JArray)jObject.responseHeaders).Select(token => JsonConvert.DeserializeObject<KeyValuePair<string, string>>(token.ToString())).ToArray();
+            ResponseContentType = jObject.responseContentType;
             ResponseBody = jObject.responseBody;
         }
 
@@ -237,7 +278,8 @@ namespace Lupus_Titanium {
         /// </summary>
         /// <param name="find"></param>
         /// <returns></returns>
-        public bool Contains(string find) {
+        public bool Contains(string find)
+        {
             string result = Result == -1 ? "pending..." : Result + " " + ((System.Net.HttpStatusCode)Result);
             string protocol = Protocol;
             if (!string.IsNullOrEmpty(HttpVersion))
@@ -250,14 +292,17 @@ namespace Lupus_Titanium {
             if (IgnoreCaseContains(RequestMethod + " " + result + " " + protocol + " " + Protocol + "://" + host + relativeUrl, find)) return true;
 
             if (IgnoreCaseContains(RequestBodyUtf8, find)) return true;
-            foreach (var header in _session.RequestHeaders) {
+            foreach (var header in _request.RequestHeaders)
+            {
                 if (IgnoreCaseContains(header.Name, find)) return true;
                 if (IgnoreCaseContains(header.Value, find)) return true;
             }
 
-            if (HasResponse) {
+            if (HasResponse)
+            {
                 if (IgnoreCaseContains(ResponseBodyUtf8, find)) return true;
-                foreach (var header in _session.ResponseHeaders) {
+                foreach (var header in _response.ResponseHeaders)
+                {
                     if (IgnoreCaseContains(header.Name, find)) return true;
                     if (IgnoreCaseContains(header.Value, find)) return true;
                 }
@@ -265,24 +310,33 @@ namespace Lupus_Titanium {
             return false;
         }
 
-        private bool IgnoreCaseContains(string from, string value) {
+        private bool IgnoreCaseContains(string from, string value)
+        {
             return from.IndexOf(value, StringComparison.InvariantCultureIgnoreCase) != -1;
         }
 
-        internal void SetResponse() { ResponseBody = _session.GetResponseBody(); }
+        internal async Task SetResponse(SessionEventArgs session) {
+            ResponseBody = await session.GetResponseBody();
+            ResponseHeaders = ConvertHttpHeaders(session.WebSession.Response.ResponseHeaders);
+            ResponseContentType = session.WebSession.Response.ContentType;
+        }
 
-        internal bool EqualsSession(SessionEventArgs session) { return _session == session; }
+        internal bool EqualsSession(SessionEventArgs session) { return session.WebSession.RequestId == RequestId; }
 
-        private void DetermineUrlParts() {
-            if (_protocol == null) {
-                string fullUrl = _session.RequestUrl;
+        private void DetermineUrlParts(SessionEventArgs session)
+        {
+            if (_protocol == null)
+            {
+                string fullUrl = session.WebSession.Request.Url;
                 string[] split = fullUrl.Split('?');
                 string url = split[0];
                 _protocol = "http";
-                if (url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)) {
+                if (url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
+                {
                     url = url.Substring(7);
                 }
-                else if (url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)) {
+                else if (url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+                {
                     url = url.Substring(8);
                     _protocol = "https";
                 }
@@ -297,15 +351,17 @@ namespace Lupus_Titanium {
                 if (_destinationPort == -1)
                     _destinationPort = _protocol == "http" ? 80 : 443;
 
-                _destinationHost = _session.RequestHostname.ToLowerInvariant();
+                _destinationHost = session.WebSession.Request.Host.ToLowerInvariant();
             }
         }
 
-        private KeyValuePair<string, string>[] ConvertHttpHeaders(List<HttpHeader> httpHeaders) {
-            var arr = new KeyValuePair<string, string>[httpHeaders.Count];
+        private KeyValuePair<string, string>[] ConvertHttpHeaders(HeaderCollection httpHeaders)
+        {
+            var arr = new KeyValuePair<string, string>[httpHeaders.Count()];
 
-            for (int i = 0; i != httpHeaders.Count; i++) {
-                var httpHeader = httpHeaders[i];
+            for (int i = 0; i != httpHeaders.Count(); i++)
+            {
+                var httpHeader = httpHeaders.ElementAt(i);
                 arr[i] = new KeyValuePair<string, string>(httpHeader.Name, httpHeader.Value);
             }
             return arr;
@@ -315,7 +371,8 @@ namespace Lupus_Titanium {
         /// 
         /// </summary>
         /// <returns></returns>
-        public string ConvertToJson() {
+        public string ConvertToJson()
+        {
             dynamic jObject = new JObject();
             jObject.parentUserActionIndex = ParentUserActionIndex;
             jObject.parentUserActionLabel = ParentUserActionLabel;
@@ -329,7 +386,8 @@ namespace Lupus_Titanium {
             jObject.getData = GetData;
             if (RequestHeaders != null) jObject.requestHeaders = JArray.FromObject(RequestHeaders);
             if (RequestBody != null) jObject.requestBody = RequestBody;
-            if (HasResponse) {
+            if (HasResponse)
+            {
                 jObject.responseHeaders = JArray.FromObject(ResponseHeaders);
                 jObject.responseContentType = ResponseContentType;
                 jObject.responseBody = ResponseBody;
@@ -348,7 +406,8 @@ namespace Lupus_Titanium {
         /// <para> Get data (&-delimited KVPs)<![CDATA[<16 0C 02 12 $>]]>Post data (UTF8)<![CDATA[<16 0C 02 12 $>]]>Post data (bytes as hex)<![CDATA[<16 0C 02 12 $>]]>Content type<![CDATA[<16 0C 02 12 $>]]>Accept</para> 
         /// <para><![CDATA[<16 0C 02 12 $>]]>Offset<![CDATA[<16 0C 02 12 $>]]>Redirects<![CDATA[<16 0C 02 12 $>]]>Request headers</para> 
         /// </returns>
-        public string ConvertToFlat(string delimiter = "<16 0C 02 12$>", string newLine = "<16 0C 02 12n>", string carriageReturn = "<16 0C 02 12r>") {
+        public string ConvertToFlat(string delimiter = "<16 0C 02 12$>", string newLine = "<16 0C 02 12n>", string carriageReturn = "<16 0C 02 12r>")
+        {
             var sb = new StringBuilder();
             sb.Append(RequestMethod);
             sb.Append(delimiter);
@@ -391,13 +450,15 @@ namespace Lupus_Titanium {
             sb.Append(Result > 299 && Result < 400);
 
             sb.Append(delimiter);
-            if (_requestHeaders.Length != 0) {
+            if (RequestHeaders.Length != 0)
+            {
                 KeyValuePair<string, string> kvp;
-                for (int i = 0; i != _requestHeaders.Length - 1; i++) {
-                    kvp = _requestHeaders[i];
+                for (int i = 0; i != RequestHeaders.Length - 1; i++)
+                {
+                    kvp = RequestHeaders[i];
                     sb.AppendFormat("{0}: {1}<16 0C 02 13$>", kvp.Key, kvp.Value);
                 }
-                kvp = _requestHeaders.Last();
+                kvp = RequestHeaders.Last();
                 sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value);
             }
 
@@ -411,7 +472,8 @@ namespace Lupus_Titanium {
         /// <param name="arr"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        private string BytesToHex(byte[] arr, string separator = "") {
+        private string BytesToHex(byte[] arr, string separator = "")
+        {
             if (separator == ",") return BitConverter.ToString(arr);
             return BitConverter.ToString(arr).Replace(",", separator);
         }
