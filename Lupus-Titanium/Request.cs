@@ -1,6 +1,6 @@
 ﻿/*
- * Copyright 2015 (c) Sizing Servers Lab
- * University College of West-Flanders, Department GKG
+ * 2015 Sizing Servers Lab, affiliated with IT bachelor degree NMCT
+ * University College of West-Flanders, Department GKG (www.sizingservers.be, www.nmct.be, www.howest.be/en)
  * 
  * Author(s):
  *    Dieter Vandroemme
@@ -10,14 +10,12 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Http;
 
-namespace Lupus_Titanium
-{
+namespace Lupus_Titanium {
     public class Request
     {
 
